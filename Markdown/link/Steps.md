@@ -271,5 +271,7 @@ rpm -qa|grep MySQL #查看mysql是否安装完成
 sudo service mysql restart # 重启服务
 mysqladmin -u root password #设置密码,需要先启动服务
 ```
+### HBase安装配置
 
+### Hive安装配置
 
