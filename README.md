@@ -31,7 +31,15 @@
 >**环境搭建**
 ~~JDK配置~~
 ~~Hadoop集群搭建~~
+HDFS存储多目录
+支持LZO压缩配置
+基准测试
+Hadoop参数优化
 ~~Zookeeper配置~~
+`~/.bashrc`配置
+Flume配置
+生成日志
+~~Kafka配置~~
 
 <p align="right"><i>▲2019-8-21 18:26:17</i></p>
 

@@ -1,11 +1,9 @@
 ## 数仓集群搭建
 ### 安装虚拟机
-安装vim tar rsync openssh openssh-clients libaio net-tools
-CentOS7卸载mariadb
 
 **关闭防火墙、配置host、免密连接、同步脚本**
 ```bash
-yum install -y vim tar rsync openssh openssh-clients libaio net-tools ntp ntpdate ntp-doc
+yum install -y vim tar rsync openssh openssh-clients libaio nc net-tools ntp ntpdate ntp-doc
 # 新建用户授权
 passwd root
 useradd tian
@@ -71,7 +69,6 @@ vim /opt/module/hadoop-2.7.2/etc/hadoop/slaves
 	<name>fs.defaultFS</name>
 	<value>hdfs://hadoop102:9000</value>
 </property>
-
 <property>
 	<name>hadoop.tmp.dir</name>
 	<value>/opt/module/hadoop-2.7.2/data/tmp</value>
@@ -83,7 +80,6 @@ vim /opt/module/hadoop-2.7.2/etc/hadoop/slaves
 	<name>dfs.replication</name>
 	<value>3</value>
 </property>
-
 <property>
 	<name>dfs.namenode.secondary.http-address</name>
 	<value>hadoop104:50090</value>
@@ -95,10 +91,18 @@ vim /opt/module/hadoop-2.7.2/etc/hadoop/slaves
 	<name>yarn.nodemanager.aux-services</name>
 	<value>mapreduce_shuffle</value>
 </property>
-
 <property>
 	<name>yarn.resourcemanager.hostname</name>
 	<value>hadoop103</value>
+</property>
+<!-- 配置日志聚集 -->
+<property>
+	<name>yarn.log-aggregation-enable</name>
+	<value>true</value>
+</property>
+<property>
+	<name>yarn.log-aggregation.retain-seconds</name>
+	<value>604800</value>
 </property>
 ```
 ```xml
@@ -107,23 +111,7 @@ vim /opt/module/hadoop-2.7.2/etc/hadoop/slaves
 	<name>mapreduce.framework.name</name>
 	<value>yarn</value>
 </property>
-```
-
-```
-hadoop102
-hadoop103
-hadoop104
-```
-*该文件中添加的内容结尾不允许有空格，文件中不允许有空行。
-集群同步slaves文件*
-
-```bash
-##配置历史服务器
-vim mapred-site.xml
-##配置日志聚集
-vim yarn-site.xml
-```
-```xml
+<!-- 配置历史服务器 -->
 <property>
 	<name>mapreduce.jobhistory.address</name>
 	<value>hadoop102:10020</value>
@@ -133,19 +121,14 @@ vim yarn-site.xml
     <value>hadoop102:19888</value>
 </property>
 ```
-```xml
-<property>
-	<name>yarn.log-aggregation-enable</name>
-	<value>true</value>
-</property>
 
-<property>
-	<name>yarn.log-aggregation.retain-seconds</name>
-	<value>604800</value>
-</property>
 ```
-
-*集群上分发配置*
+hadoop102
+hadoop103
+hadoop104
+```
+* 该文件中添加的内容结尾不允许有空格，文件中不允许有空行
+* 集群上分发配置
 
 
 
@@ -163,13 +146,9 @@ sbin/start-yarn.sh #103
 jpsall #查看所有进程
 ```
 [Web端查看SecondaryNameNode](http://hadoop104:50090/status.html).
-
 [web端查看HDFS文件系统](http://tian:50070/dfshealth.html#tab-overview)
-
 [Web页面查看YARN](http://hadoop103:8088/cluster)
-
 [查看JobHistory](http://hadoop102:19888/jobhistory)
-
 [Web查看日志](http://hadoop103:19888/jobhistory)
 
 ### 集群测试
@@ -269,12 +248,11 @@ mv kafka_2.11-0.11.0.0/ kafka
 mkdir logs
 cd config/
 vim server.properties
-vim /etc/profile # 添加kafka环境变量
-source /etc/profile
 xsync /opt/module/kafka/ # 分发后配置其他节点环境变量
 # 修改其他节点server.properties中的brokerid为1和2
 ```
-[server.properties](link/Kafka-server.properties)
+[server.properties](Kafka-server.properties)
+
 **启停测试**
 ```bash
 # 启动集群，先开zookeeper
@@ -282,6 +260,16 @@ kafka-server-start.sh -daemon config/server.properties # 在每个节点执行
 # 关闭集群，先关zookeeper
 kafka-server-stop.sh # 在每个节点执行
 ```
-
+### MySQL安装配置
+```bash
+rpm -qa|grep mysql #查看当前mysql的安装情况
+sudo rpm -e --nodeps mysql-libs-5.1.73-7.el6.x86_64 #卸载之前的mysql
+sudo rpm -ivh MySQL-client-5.5.54-1.linux2.6.x86_64.rpm #在包所在的目录中安装
+sudo rpm -ivh MySQL-server-5.5.54-1.linux2.6.x86_64.rpm
+mysqladmin --version #查看mysql版本
+rpm -qa|grep MySQL #查看mysql是否安装完成
+sudo service mysql restart # 重启服务
+mysqladmin -u root password #设置密码,需要先启动服务
+```
 
 
