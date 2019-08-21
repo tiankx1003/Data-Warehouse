@@ -113,9 +113,6 @@ vim /opt/module/hadoop-2.7.2/etc/hadoop/slaves
 hadoop102
 hadoop103
 hadoop104
-hadoop104
-hadoop105
-hadoop106
 ```
 *该文件中添加的内容结尾不允许有空格，文件中不允许有空行。
 集群同步slaves文件*
@@ -123,14 +120,13 @@ hadoop106
 ```bash
 ##配置历史服务器
 vim mapred-site.xml
-sbin/mr-jobhistory-daemon.sh start historyserver
 ##配置日志聚集
 vim yarn-site.xml
 ```
 ```xml
 <property>
-<name>mapreduce.jobhistory.address</name>
-<value>hadoop102:10020</value>
+	<name>mapreduce.jobhistory.address</name>
+	<value>hadoop102:10020</value>
 </property>
 <property>
     <name>mapreduce.jobhistory.webapp.address</name>
@@ -139,13 +135,13 @@ vim yarn-site.xml
 ```
 ```xml
 <property>
-<name>yarn.log-aggregation-enable</name>
-<value>true</value>
+	<name>yarn.log-aggregation-enable</name>
+	<value>true</value>
 </property>
 
 <property>
-<name>yarn.log-aggregation.retain-seconds</name>
-<value>604800</value>
+	<name>yarn.log-aggregation.retain-seconds</name>
+	<value>604800</value>
 </property>
 ```
 
@@ -160,19 +156,11 @@ vim yarn-site.xml
 bin/hdfs namenode -format #102
 #启动HDFS
 sbin/start-dfs.sh #102
-jps #103
-#4166 NameNode
-#4482 Jps
-#4263 DataNode
-jps #103
-#3218 DataNode
-#3288 Jps
-jps #104
-#3221 DataNode
-#3283 SecondaryNameNode
-#3364 Jps
+#启动历史服务器
+sbin/mr-jobhistory-daemon.sh start historyserver
 #启动YARN
 sbin/start-yarn.sh #103
+jpsall #查看所有进程
 ```
 [Web端查看SecondaryNameNode](http://hadoop104:50090/status.html).
 
@@ -209,7 +197,6 @@ tar -zxvf tmp.file
 **安装部署**
 ```bash
 tar -zxvf zookeeper-3.4.10.tar.gz -C /opt/module/
-mv zoo_sample.cfg zoo.cfg #/opt/module/zookeeper-3.4.10/conf
 ### 配置服务器编号
 # （1）在/opt/module/zookeeper-3.4.10/这个目录下创建zkData
 mkdir -p zkData
@@ -230,12 +217,12 @@ mv zoo_sample.cfg zoo.cfg
 # （2）打开zoo.cfg文件
 vim zoo.cfg
 # 修改数据存储路径配置
-# dataDir=/opt/module/zookeeper-3.4.10/zkData
+# dataDir=/opt/module/zookeeper/zkData
 # 增加如下配置
 #######################cluster##########################
-# server.1=hadoop101:2888:3888
-# server.2=hadoop102:2888:3888
-# server.3=hadoop103:2888:3888
+# server.1=hadoop102:2888:3888
+# server.2=hadoop103:2888:3888
+# server.3=hadoop104:2888:3888
 # （3）同步zoo.cfg配置文件
 xsync zoo.cfg
 # （4）配置参数解读

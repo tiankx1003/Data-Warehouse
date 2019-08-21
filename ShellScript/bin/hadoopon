@@ -1,4 +1,5 @@
 #!/bin/bash
 echo "Hadoop Starting..."
 start-dfs.sh
+mr-jobhistory-daemon.sh start historyserver
 ssh hadoop103 'source /etc/profile&&start-yarn.sh'
