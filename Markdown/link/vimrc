@@ -1,0 +1,32 @@
+colorscheme murphy
+syntax on
+set showmode
+set showcmd
+set t_Co=256
+filetype on
+filetype indent on
+filetype plugin on
+filetype plugin indent on
+set autoindent
+set cindent
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
+set cursorline
+set linebreak
+set wrapmargin=0
+set incsearch
+set smartcase
+set nobackup
+set noswapfile
+set undofile
+set noerrorbells
+set visualbell
+set history=1000
+set autoread
+set fileencodings=utf-8,ucs-bom,gb18030,gbk,gb2312,cp936
+set termencoding=utf-8
+set encoding=utf-8
+au FileType c,cpp setlocal comments-=:// comments+=f://
+set paste
+" set number

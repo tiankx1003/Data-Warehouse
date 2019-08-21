@@ -53,7 +53,7 @@ public class AppMain {
             switch (flag) {
                 case (0):
                     //应用启动
-                    AppStart appStart = generateStart();
+                    AppStart appStart = generateStart(); //生成启动日志
                     String jsonString = JSON.toJSONString(appStart);
 
                     //控制台打印
