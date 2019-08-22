@@ -1,22 +1,24 @@
 #! /bin/bash
 
 case $1 in
-"start"){
+# 传参为1时开启，0关闭，?查看状态
+"1"){ 
 	for i in `cat /opt/module/hadoop-2.7.2/etc/hadoop/slaves`
 	do
-		ssh $i "/opt/module/zookeeper-3.4.10/bin/zkServer.sh start"
+		ssh $i "zkServer.sh start"
 	done
 };;
-"stop"){
+"0"){
+
 	for i in `cat /opt/module/hadoop-2.7.2/etc/hadoop/slaves`
 	do
-		ssh $i "/opt/module/zookeeper-3.4.10/bin/zkServer.sh stop"
+		ssh $i "zkServer.sh stop"
 	done
 };;
-"status"){
+"?"){
 	for i in `cat /opt/module/hadoop-2.7.2/etc/hadoop/slaves`
 	do
-		ssh $i "/opt/module/zookeeper-3.4.10/bin/zkServer.sh status"
+		ssh $i "zkServer.sh status"
 	done
 };;
 esac

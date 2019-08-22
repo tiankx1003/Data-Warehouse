@@ -20,6 +20,7 @@ vim /etc/hosts
 cd ~/bin
 vim xsync
 vim copy-ssh
+vim ~/.bashrc # source /etc/profile
 # 安装软件配置环境变量
 chown tian:tian /opt/module/ /opt/software -R
 ```
@@ -48,11 +49,6 @@ vim /etc/sysconfig/network #修改主机名
 **YARN**|NodeManager|ResourceManager<br>NodeManager|NodeManager
 
 ```bash
-echo $JAVA_HOME
-vim hadoop-env.sh
-vim yarn-env.sh
-vim mapred-env.sh
-
 vim core-site.xml
 vim hdfs-site.xml
 vi yarn-site.xml 
@@ -174,62 +170,34 @@ tar -zxvf tmp.file
 ```bash
 tar -zxvf zookeeper-3.4.10.tar.gz -C /opt/module/
 ### 配置服务器编号
-# （1）在/opt/module/zookeeper-3.4.10/这个目录下创建zkData
 mkdir -p zkData
-# （2）在/opt/module/zookeeper-3.4.10/zkData目录下创建一个myid的文件
-touch myid
-# 添加myid文件，注意一定要在linux里面创建，在notepad++里面很可能乱码
-# （3）编辑myid文件
-vi myid
-# 在文件中添加与server对应的编号：
-# 2
-# （4）拷贝配置好的zookeeper到其他机器上
-xsync myid
-# 并分别在hadoop102、hadoop103上修改myid文件中内容为3、4
-
-### 配置zoo.cfg文件
-# （1）重命名/opt/module/zookeeper-3.4.10/conf这个目录下的zoo_sample.cfg为zoo.cfg
+vi myid # 在文件中添加与server对应的编号：
+xsync myid # 并分别在hadoop102、hadoop103上修改myid
 mv zoo_sample.cfg zoo.cfg
-# （2）打开zoo.cfg文件
 vim zoo.cfg
+xsync zoo.cfg
+```
+```conf
 # 修改数据存储路径配置
-# dataDir=/opt/module/zookeeper/zkData
+dataDir=/opt/module/zookeeper/zkData
 # 增加如下配置
 #######################cluster##########################
-# server.1=hadoop102:2888:3888
-# server.2=hadoop103:2888:3888
-# server.3=hadoop104:2888:3888
-# （3）同步zoo.cfg配置文件
-xsync zoo.cfg
-# （4）配置参数解读
-# server.A=B:C:D。
-# A是一个数字，表示这个是第几号服务器
+server.1=hadoop102:2888:3888
+server.2=hadoop103:2888:3888
+server.3=hadoop104:2888:3888
 ```
+
 **启停测试**
 ```bash
-#（1）启动Zookeeper
 bin/zkServer.sh start
-
-#（2）查看进程是否启动
 jps
-#4020 Jps
-#4001 QuorumPeerMain
-
-#（3）查看状态：
+# QuorumPeerMain
 bin/zkServer.sh status
-#ZooKeeper JMX enabled by default
-#Using config: /opt/module/zookeeper-3.4.10/bin/../conf/zoo.cfg
-#Mode: standalone
-
-#（4）启动客户端：
 bin/zkCli.sh
-
-#（5）退出客户端：
-quit #[zk: localhost:2181(CONNECTED) 0] 
-
-#（6）停止Zookeeper
+quit
 bin/zkServer.sh stop
 ```
+
 ### Flume
 ```bash
 tar -zxvf apache-flume-1.7.0-bin.tar.gz -C ../module/
