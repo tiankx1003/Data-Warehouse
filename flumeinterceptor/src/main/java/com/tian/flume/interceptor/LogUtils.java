@@ -1,4 +1,4 @@
-package com.atguigu.flume.interceptor;
+package com.tian.flume.interceptor;
 
 import org.apache.commons.lang.math.NumberUtils;
 

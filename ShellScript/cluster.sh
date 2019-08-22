@@ -5,8 +5,8 @@ case $1 in
 	echo " -------- 启动 集群 -------"
 
 	echo " -------- 启动 hadoop集群 -------"
-	/opt/module/hadoop-2.7.2/sbin/start-dfs.sh 
-	ssh hadoop103 "/opt/module/hadoop-2.7.2/sbin/start-yarn.sh"
+	$HADOOP_HOME/sbin/start-dfs.sh 
+	ssh hadoop103 "$HADOOP_HOME/sbin/start-yarn.sh"
 
 	#启动 Zookeeper集群
 	zk.sh start
@@ -44,7 +44,7 @@ sleep 6s;
 	zk.sh stop
 
 	echo " -------- 停止 hadoop集群 -------"
-	ssh hadoop103 "/opt/module/hadoop-2.7.2/sbin/stop-yarn.sh"
-	/opt/module/hadoop-2.7.2/sbin/stop-dfs.sh 
+	ssh hadoop103 "$HADOOP_HOME/sbin/stop-yarn.sh"
+	$HADOOP_HOME/sbin/stop-dfs.sh 
 };;
 esac
