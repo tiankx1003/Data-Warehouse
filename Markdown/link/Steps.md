@@ -1,6 +1,5 @@
-## 数仓集群搭建
-### 安装虚拟机
-
+## Data-Warehouse Cluster Build
+### Install CentOS
 **关闭防火墙、配置host、免密连接、同步脚本**
 ```bash
 yum install -y vim tar rsync openssh openssh-clients libaio nc net-tools ntp ntpdate ntp-doc
@@ -21,6 +20,7 @@ vim /etc/hosts
 cd ~/bin
 vim xsync
 vim copy-ssh
+vim ~/.bashrc # source /etc/profile
 # 安装软件配置环境变量
 chown tian:tian /opt/module/ /opt/software -R
 ```
@@ -33,7 +33,7 @@ ssh-copy-id hadoop101
 cat id_rsa.pub >> authorized_keys
 ```
 
-### 克隆虚拟机
+### Clone System
 ```bash
 vim /etc/udev/rules.d/70-persistent-net.rules
 vim /etc/sysconfig/network-scripts/ifcfg-eth0
@@ -41,7 +41,7 @@ vim /etc/sysconfig/network #修改主机名
 ```
 *配置多个节点之间的免密连接*
 
-### 集群配置
+### Hadoop
 
 -|hadoop102|hadoop103|hadoop104
 :-:|:-|:-|:-
@@ -49,11 +49,6 @@ vim /etc/sysconfig/network #修改主机名
 **YARN**|NodeManager|ResourceManager<br>NodeManager|NodeManager
 
 ```bash
-echo $JAVA_HOME
-vim hadoop-env.sh
-vim yarn-env.sh
-vim mapred-env.sh
-
 vim core-site.xml
 vim hdfs-site.xml
 vi yarn-site.xml 
@@ -130,9 +125,7 @@ hadoop104
 * 该文件中添加的内容结尾不允许有空格，文件中不允许有空行
 * 集群上分发配置
 
-
-
-### 群起集群
+**群起集群**
 
 ```bash
 #第一次启动集群时需要格式化namenode
@@ -151,7 +144,7 @@ jpsall #查看所有进程
 [查看JobHistory](http://hadoop102:19888/jobhistory)
 [Web查看日志](http://hadoop103:19888/jobhistory)
 
-### 集群测试
+**集群测试**
 ```bash
 #hadoop fs -mkdir -p /user/tian/input
 hdfs dfs -mkdir -p /usrer/tian/input1
@@ -171,69 +164,41 @@ cat blk_1073741837>>tmp.file
 tar -zxvf tmp.file
 ```
 
-### ZK安装配置
+### ZooKeeper
 
 **安装部署**
 ```bash
 tar -zxvf zookeeper-3.4.10.tar.gz -C /opt/module/
 ### 配置服务器编号
-# （1）在/opt/module/zookeeper-3.4.10/这个目录下创建zkData
 mkdir -p zkData
-# （2）在/opt/module/zookeeper-3.4.10/zkData目录下创建一个myid的文件
-touch myid
-# 添加myid文件，注意一定要在linux里面创建，在notepad++里面很可能乱码
-# （3）编辑myid文件
-vi myid
-# 在文件中添加与server对应的编号：
-# 2
-# （4）拷贝配置好的zookeeper到其他机器上
-xsync myid
-# 并分别在hadoop102、hadoop103上修改myid文件中内容为3、4
-
-### 配置zoo.cfg文件
-# （1）重命名/opt/module/zookeeper-3.4.10/conf这个目录下的zoo_sample.cfg为zoo.cfg
+vi myid # 在文件中添加与server对应的编号：
+xsync myid # 并分别在hadoop102、hadoop103上修改myid
 mv zoo_sample.cfg zoo.cfg
-# （2）打开zoo.cfg文件
 vim zoo.cfg
+xsync zoo.cfg
+```
+```conf
 # 修改数据存储路径配置
-# dataDir=/opt/module/zookeeper/zkData
+dataDir=/opt/module/zookeeper/zkData
 # 增加如下配置
 #######################cluster##########################
-# server.1=hadoop102:2888:3888
-# server.2=hadoop103:2888:3888
-# server.3=hadoop104:2888:3888
-# （3）同步zoo.cfg配置文件
-xsync zoo.cfg
-# （4）配置参数解读
-# server.A=B:C:D。
-# A是一个数字，表示这个是第几号服务器
+server.1=hadoop102:2888:3888
+server.2=hadoop103:2888:3888
+server.3=hadoop104:2888:3888
 ```
+
 **启停测试**
 ```bash
-#（1）启动Zookeeper
 bin/zkServer.sh start
-
-#（2）查看进程是否启动
 jps
-#4020 Jps
-#4001 QuorumPeerMain
-
-#（3）查看状态：
+# QuorumPeerMain
 bin/zkServer.sh status
-#ZooKeeper JMX enabled by default
-#Using config: /opt/module/zookeeper-3.4.10/bin/../conf/zoo.cfg
-#Mode: standalone
-
-#（4）启动客户端：
 bin/zkCli.sh
-
-#（5）退出客户端：
-quit #[zk: localhost:2181(CONNECTED) 0] 
-
-#（6）停止Zookeeper
+quit
 bin/zkServer.sh stop
 ```
-### Flume安装配置
+
+### Flume
 ```bash
 tar -zxvf apache-flume-1.7.0-bin.tar.gz -C ../module/
 mv apache-flume-1.7.0-bin flume
@@ -241,7 +206,7 @@ mv flume-env.sh.template flume-env.sh
 vim flume-env.sh
 # export JAVA_HOME=/opt/module/jdk1.8.0_144
 ```
-### Kafka安装配置
+### Kafka
 ```bash
 software]$ tar -zxvf kafka_2.11-0.11.0.0.tgz -C /opt/module/
 mv kafka_2.11-0.11.0.0/ kafka
@@ -260,7 +225,72 @@ kafka-server-start.sh -daemon config/server.properties # 在每个节点执行
 # 关闭集群，先关zookeeper
 kafka-server-stop.sh # 在每个节点执行
 ```
-### MySQL安装配置
+
+### HBase
+
+```bash
+# 启动zk hadoop
+tar -zxvf hbase-1.3.1-bin.tar.gz -C /opt/module
+vim hbase-env.sh
+vim hbase-site.xml
+vim regionservers
+mv hbase-1.3.1/ hbase/
+# 软链接hadoop配置文件到hbase,每个节点配置了hadoop环境变量可以省略这一步
+ln -s /opt/module/hadoop-2.7.2/etc/hadoop/core-site.xml /opt/module/hbase/conf/core-site.xml
+ln -s /opt/module/hadoop-2.7.2/etc/hadoop/hdfs-site.xml /opt/module/hbase/conf/hdfs-site.xml
+xsync /opt/module/hbase/ # 分发配置
+# 启停
+hbase-daemon.sh start master
+hbase-daemon.sh start regionserver
+start-hbase.sh # 启动方法二
+stop-hbase.sh
+hbase shell # 启动交互
+```
+
+```properties
+export JAVA_HOME=/opt/module/jdk1.8.0_144
+export HBASE_MANAGES_ZK=false
+```
+
+```xml
+<configuration>
+	<property>     
+		<name>hbase.rootdir</name>     
+		<value>hdfs://hadoop102:9000/hbase</value>   
+	</property>
+
+	<property>   
+		<name>hbase.cluster.distributed</name>
+		<value>true</value>
+	</property>
+
+   <!-- 0.98后的新变动，之前版本没有.port,默认端口为60000 -->
+	<property>
+		<name>hbase.master.port</name>
+		<value>16000</value>
+	</property>
+
+	<property>   
+		<name>hbase.zookeeper.quorum</name>
+	     <value>hadoop102,hadoop103,hadoop104</value>
+	</property>
+
+	<property>   
+		<name>hbase.zookeeper.property.dataDir</name>
+	     <value>/opt/module/zookeeper-3.4.10/zkData</value>
+	</property>
+</configuration>
+```
+
+```
+hadoop102
+hadoop103
+hadoop104
+```
+
+[hbase页面](http://hadoop102:16010)
+
+### MySQL
 ```bash
 rpm -qa|grep mysql #查看当前mysql的安装情况
 sudo rpm -e --nodeps mysql-libs-5.1.73-7.el6.x86_64 #卸载之前的mysql
@@ -271,5 +301,88 @@ rpm -qa|grep MySQL #查看mysql是否安装完成
 sudo service mysql restart # 重启服务
 mysqladmin -u root password #设置密码,需要先启动服务
 ```
+```sql
+# 修改密码
+SET PASSWORD=PASSWORD('root');
+## MySQL在user表中主机配置
+show databases;
+use mysql;
+show tables;
+desc user;
+select User, Host, Password from user;
+# 修改user表，把Host表内容修改为%
+update user set host='%' where host='localhost'
+# 删除root中的其他账户
+delete from user where Host='hadoop102';
+delete from user where Host='127.0.0.1';
+delete from user where Host='::1';
+# 刷新
+flush privileges;
+\q;
+```
 
+### Hive
+```bash
+tar -zxvf apache-hive-1.2.1-bin.tar.gz -C /opt/module/
+mv apache-hive-1.2.1-bin/ hive
+mv hive-env.sh.template hive-env.sh
+# export HADOOP_HOME=/opt/module/hadoop-2.7.2
+# export HIVE_CONF_DIR=/opt/module/hive/conf
 
+# 在HDFS上创建/tmp和/user/hive/warehouse两个目录并修改他们的同组权限可写
+bin/hadoop fs -mkdir /tmp
+bin/hadoop fs -mkdir -p /user/hive/warehouse
+bin/hadoop fs -chmod g+w /tmp
+bin/hadoop fs -chmod g+w /user/hive/warehouse
+```
+
+**Hive元数据配置到MySQL**
+
+```bash
+# 拷贝驱动
+tar -zxvf mysql-connector-java-5.1.27.tar.gz
+cp mysql-connector-java-5.1.27-bin.jar /opt/module/hive/lib/
+```
+```bash
+# 配置Metastore到MySQL
+# /opt/module/hive/conf目录下创建一个hive-site.xml
+touch hive-site.xml
+vi hive-site.xml
+```
+
+根据官方文档配置参数
+[官方文档参数](https://cwiki.apache.org/confluence/display/Hive/AdminManual+MetastoreAdmin)
+```xml
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <property>
+        <name>javax.jdo.option.ConnectionURL</name>
+        <value>jdbc:mysql://hadoop102:3306/metastore?createDatabaseIfNotExist=true</value>
+        <description>JDBC connect string for a JDBC metastore</description>
+    </property>
+
+    <property>
+        <name>javax.jdo.option.ConnectionDriverName</name>
+        <value>com.mysql.jdbc.Driver</value>
+        <description>Driver class name for a JDBC metastore</description>
+    </property>
+
+    <property>
+        <name>javax.jdo.option.ConnectionUserName</name>
+        <value>root</value>
+        <description>username to use against metastore database</description>
+    </property>
+
+    <property>
+        <name>javax.jdo.option.ConnectionPassword</name>
+        <value>root</value>
+        <description>password to use against metastore database</description>
+    </property>
+</configuration>
+```
+```bash
+hiveserver2
+beeline
+# !connect jdbc:hive2://hadoop101:10000
+```

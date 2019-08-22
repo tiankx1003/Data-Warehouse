@@ -16,6 +16,6 @@ user=`whoami`
 
 for i in hadoop102 hadoop103 hadoop104
 do
-	echo ------------------- hadoop$host -------------------
+	echo ------------------- $i -------------------
 	rsync -av $pdir/$fname $user@$i:$pdir
 done

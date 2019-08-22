@@ -18,7 +18,8 @@ set wrapmargin=0
 set incsearch
 set smartcase
 set nobackup
-set noswapfile
+set swapfile
+set dir=~/tmp
 set undofile
 set noerrorbells
 set visualbell
