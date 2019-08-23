@@ -20,7 +20,11 @@
 
 >**数据生成脚本**<br>~~事件日志bean~~<br>~~启动日志bean~~<br>~~主程序~~<br>
 
->**环境搭建**<br>~~JDK配置~~<br>~~Hadoop集群搭建~~<br>HDFS存储多目录<br>~~支持LZO压缩配置~~<br>基准测试<br>Hadoop参数优化<br>~~Zookeeper配置~~<br>~~`~/.bashrc`配置~~<br>~~Flume配置~~<br>~~生成日志~~<br>~~Kafka配置~~<br>~~采集日志Flume~~<br>~~Flume消费Kafka配置~~<br>采集通道启停<br>
+>**环境搭建**<br>~~JDK配置~~<br>~~Hadoop集群搭建~~<br>HDFS存储多目录<br>~~支持LZO压缩配置~~<br>基准测试<br>Hadoop参数优化<br>~~Zookeeper配置~~<br>~~`~/.bashrc`配置~~<br>~~Flume配置~~<br>~~生成日志~~<br>~~Kafka配置~~<br>~~采集日志Flume~~<br>~~Flume消费Kafka配置~~<br>~~采集通道启停~~<br>
 
-<p align="right"><i>▲2019-8-22 16:46:31</i></p>
+#### ▼ 用户行为数据仓库
+
+>**数仓分层**<br>Hive配置Tez引擎<br>ODS<br>DWD<br>
+
+<p align="right"><i>▲2019-8-23 11:21:35</i></p>
 
