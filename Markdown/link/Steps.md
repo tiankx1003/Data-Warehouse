@@ -311,7 +311,7 @@ show tables;
 desc user;
 select User, Host, Password from user;
 # 修改user表，把Host表内容修改为%
-update user set host='%' where host='localhost'
+update user set host='%' where host='localhost';
 # 删除root中的其他账户
 delete from user where Host='hadoop102';
 delete from user where Host='127.0.0.1';
@@ -352,39 +352,12 @@ vi hive-site.xml
 
 根据官方文档配置参数
 [官方文档参数](https://cwiki.apache.org/confluence/display/Hive/AdminManual+MetastoreAdmin)
-```xml
-<?xml version="1.0"?>
-<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-<configuration>
-    <property>
-        <name>javax.jdo.option.ConnectionURL</name>
-        <value>jdbc:mysql://hadoop102:3306/metastore?createDatabaseIfNotExist=true</value>
-        <description>JDBC connect string for a JDBC metastore</description>
-    </property>
+[**hive-site.xml**](../../Configuration/Hive/hive-site.xml)
 
-    <property>
-        <name>javax.jdo.option.ConnectionDriverName</name>
-        <value>com.mysql.jdbc.Driver</value>
-        <description>Driver class name for a JDBC metastore</description>
-    </property>
-
-    <property>
-        <name>javax.jdo.option.ConnectionUserName</name>
-        <value>root</value>
-        <description>username to use against metastore database</description>
-    </property>
-
-    <property>
-        <name>javax.jdo.option.ConnectionPassword</name>
-        <value>root</value>
-        <description>password to use against metastore database</description>
-    </property>
-</configuration>
-```
 ```bash
 hiveserver2
 beeline
-# !connect jdbc:hive2://hadoop101:10000
+# !connect jdbc:hive2://hadoop102:10000
 ```
 
 ### Tez
@@ -415,18 +388,17 @@ done
 export HIVE_AUX_JARS_PATH=/opt/module/hadoop-2.7.2/share/hadoop/common/hadoop-lzo-0.4.20.jar$TEZ_JARS
 ```
 ```xml
-<property>
-    <name>hive.execution.engine</name>
-    <value>tez</value>
-</property>
+	<property>
+		<name>hive.execution.engine</name>
+		<value>tez</value>
+	</property>
 ```
 /opt/module/hive/conf目录下添加[**tez-site.xml**](../../Configuration/tez-site.xml)
 ```bash
 # 上传tez到HDFS
 hadoop fs -mkdir /tez
 hadoop fs -put /opt/module/tez-0.9.1/ /tez
-hadoop fs -ls /tez
-/tez/tez-0.9.1
+hadoop fs -ls /tez /tez/tez-0.9.1
 # 启动hive测试
 hive
 ```
@@ -434,6 +406,6 @@ hive
 create table student(
 id int,
 name string);
-insert into student values(1,"zhangsan");
+insert into student values(1,"lisi");
 select * from student;
 ```
