@@ -17,16 +17,13 @@
 <!-- Put site-specific property overrides in this file. -->
 
 <configuration>
+<property>
+	<name>dfs.replication</name>
+	<value>3</value>
+</property>
 
-	<property>
-		<name>dfs.replication</name>
-		<value>3</value>
-    </property>
-
-    <property>
-        <name>dfs.namenode.secondary.http-address</name>
-        <value>hadoop103:50090</value>
-    </property>
-
-
+<property>
+	<name>dfs.namenode.secondary.http-address</name>
+	<value>hadoop104:50090</value>
+</property>
 </configuration>
