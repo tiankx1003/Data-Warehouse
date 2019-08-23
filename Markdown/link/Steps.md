@@ -386,3 +386,54 @@ hiveserver2
 beeline
 # !connect jdbc:hive2://hadoop101:10000
 ```
+
+### Tez
+```bash
+tar -zxvf apache-tez-0.9.1-bin.tar.gz /opt/module/
+mv apache-tez-0.9.1-bin/ tez-0.9.1
+# Hive配置Tez
+vim hive-env.sh
+vim hive-site.xml
+```
+```conf
+# Set HADOOP_HOME to point to a specific hadoop install directory
+export HADOOP_HOME=/opt/module/hadoop-2.7.2
+
+# Hive Configuration Directory can be controlled by:
+export HIVE_CONF_DIR=/opt/module/hive/conf
+
+# Folder containing extra libraries required for hive compilation/execution can be controlled by:
+export TEZ_HOME=/opt/module/tez-0.9.1    #是你的tez的解压目录
+export TEZ_JARS=""
+for jar in `ls $TEZ_HOME |grep jar`; do
+    export TEZ_JARS=$TEZ_JARS:$TEZ_HOME/$jar
+done
+for jar in `ls $TEZ_HOME/lib`; do
+    export TEZ_JARS=$TEZ_JARS:$TEZ_HOME/lib/$jar
+done
+
+export HIVE_AUX_JARS_PATH=/opt/module/hadoop-2.7.2/share/hadoop/common/hadoop-lzo-0.4.20.jar$TEZ_JARS
+```
+```xml
+<property>
+    <name>hive.execution.engine</name>
+    <value>tez</value>
+</property>
+```
+/opt/module/hive/conf目录下添加[**tez-site.xml**](../../Configuration/tez-site.xml)
+```bash
+# 上传tez到HDFS
+hadoop fs -mkdir /tez
+hadoop fs -put /opt/module/tez-0.9.1/ /tez
+hadoop fs -ls /tez
+/tez/tez-0.9.1
+# 启动hive测试
+hive
+```
+```sql
+create table student(
+id int,
+name string);
+insert into student values(1,"zhangsan");
+select * from student;
+```
