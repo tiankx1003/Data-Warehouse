@@ -4,7 +4,7 @@
 # -- 变量的值，非空，返回true
 # -- 变量的值，为空，返回false
 # 说明2：
-# 查看date命令的使用，[atguigu@hadoop102 ~]$ date --help
+# 查看date命令的使用，[tian@hadoop102 ~]$ date --help
 # 企业开发中一般在每日凌晨30分~1点执行数据导入脚本
 
 # 定义变量方便修改
