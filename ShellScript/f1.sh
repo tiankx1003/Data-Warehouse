@@ -13,7 +13,7 @@ case $1 in
         for i in hadoop102 hadoop103
         do
                 echo " --------启动 $i 采集flume-------"
-                ssh $i "nohup flume-ng agent --conf-file $FLUME_HOME/conf/file-flume-kafka.conf --name a1 -Dflume.root.logger=INFO,LOGFILE >/dev/null 2>&1 &"
+                ssh $i "nohup flume-ng agent -n a1 -c $FLUME_HOME/conf -f $FLUME_HOME/job/file-flume-kafka.conf -Dflume.root.logger=INFO,LOGFILE >/dev/null 2>&1 &"
         done
 };;	
 "0"){
