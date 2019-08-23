@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<?xml version="1.0" encoding="UTF-8" ?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl" ?>
 <!--
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -17,32 +17,30 @@
 <!-- Put site-specific property overrides in this file. -->
 
 <configuration>
+  <!-- core-site.xml -->
+  <property>
+    <name>fs.defaultFS</name>
+    <value>hdfs://hadoop102:9000</value>
+  </property>
 
-	    <!-- 指定HDFS中NameNode的地址 -->
-    <property>
-        <name>fs.defaultFS</name>
-        <value>hdfs://hadoop101:8020</value>
-    </property>
+  <property>
+    <name>hadoop.tmp.dir</name>
+    <value>/opt/module/hadoop-2.7.2/data/tmp</value>
+  </property>
+  <property>
+    <name>io.compression.codecs</name>
+    <value>
+			org.apache.hadoop.io.compress.GzipCodec,
+			org.apache.hadoop.io.compress.DefaultCodec,
+			org.apache.hadoop.io.compress.BZip2Codec,
+			org.apache.hadoop.io.compress.SnappyCodec,
+			com.hadoop.compression.lzo.LzoCodec,
+			com.hadoop.compression.lzo.LzopCodec
+		</value>
+  </property>
 
-    <!-- 指定hadoop运行时产生文件的存储目录 -->
-    <property>
-        <name>hadoop.tmp.dir</name>
-        <value>/opt/module/cdh/hadoop-2.5.0-cdh5.3.6/data/tmp</value>
-    </property>
-
-
-	<!-- Oozie Server的Hostname -->
-	<property>
-		<name>hadoop.proxyuser.tian.hosts</name>
-		<value>*</value>
-	</property>
-
-	<!-- 允许被Oozie代理的用户组 -->
-	<property>
-		<name>hadoop.proxyuser.tian.groups</name>
-	 	<value>*</value>
-	</property>
-
-
-
+  <property>
+    <name>io.compression.codec.lzo.class</name>
+    <value>com.hadoop.compression.lzo.LzoCodec</value>
+  </property>
 </configuration>

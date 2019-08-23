@@ -17,23 +17,16 @@
 <!-- Put site-specific property overrides in this file. -->
 
 <configuration>
-
-	  <!-- 指定mr运行在yarn上 -->
-    <property>
-        <name>mapreduce.framework.name</name>
-        <value>yarn</value>
-    </property>
-    <!-- 配置 MapReduce JobHistory Server 地址 ，默认端口10020 -->
-    <property>
-        <name>mapreduce.jobhistory.address</name>
-        <value>hadoop101:10020</value>
-    </property>
-
-    <!-- 配置 MapReduce JobHistory Server web ui 地址， 默认端口19888 -->
-    <property>
-        <name>mapreduce.jobhistory.webapp.address</name>
-        <value>hadoop101:19888</value>
-    </property>
-
-
+<property>
+	<name>mapreduce.framework.name</name>
+	<value>yarn</value>
+</property>
+<property>
+	<name>mapreduce.jobhistory.address</name>
+	<value>hadoop102:10020</value>
+</property>
+<property>
+    <name>mapreduce.jobhistory.webapp.address</name>
+    <value>hadoop102:19888</value>
+</property>
 </configuration>
