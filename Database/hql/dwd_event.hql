@@ -163,7 +163,7 @@ location '/warehouse/gmall/dwd/dwd_notification_log/'
 TBLPROPERTIES('parquet.compression'='lzo');
 
 -- 用户前台活跃表
-hive (gmall)> 
+ 
 drop table if exists dwd_active_foreground_log;
 CREATE EXTERNAL TABLE dwd_active_foreground_log(
 `mid_id` string,
