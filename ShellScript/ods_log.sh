@@ -9,8 +9,8 @@
 
 # 定义变量方便修改
 APP=gmall
-hive=/opt/module/hive/bin/hive
-hadoop=/opt/module/hadoop/bin/hadoop
+hive=$HIVE_HOME/bin/hive
+hadoop=$HADOOP_HOME/bin/hadoop
 
 # 如果是输入的日期按照取输入日期；如果没输入日期取当前时间的前一天
 if [ -n "$1" ] ;then

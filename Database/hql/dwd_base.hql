@@ -30,7 +30,7 @@ TBLPROPERTIES('parquet.compression'='lzo');
 -- 创建解析事件日志基础明细表
 set hive.exec.dynamic.partition.mode=nonstrict;
 
-insert overwrite table dwd_base_event_log partition(dt='2019-02-10')
+insert overwrite table dwd_base_event_log partition(dt='2019-08-24')
 select
     base_analizer(line,'mid') as mid_id,
     base_analizer(line,'uid') as user_id,
@@ -53,4 +53,4 @@ select
     event_json,
     base_analizer(line,'st') as server_time
 from ods_event_log lateral view flat_analizer(base_analizer(line,'et')) tmp_flat as event_name,event_json
-where dt='2019-02-10' and base_analizer(line,'et')<>'';
+where dt='2019-08-24' and base_analizer(line,'et')<>'';
