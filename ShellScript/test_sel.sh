@@ -21,19 +21,16 @@ fi
 
 echo "===日志日期为 $do_date==="
 sql="
-load data inpath '/origin_data/gmall/log/topic_start/$do_date' into table "$APP".ods_start_log partition(dt='$do_date');
 load data inpath '/origin_data/gmall/log/topic_event/$do_date' into table "$APP".ods_event_log partition(dt='$do_date');
 "
 
 $hive -e "$sql"
 
 # 为lzo压缩文件创建索引
-hadoop jar $HADOOP_HOME/share/hadoop/common/hadoop-lzo-0.4.20.jar com.hadoop.compression.lzo.DistributedLzoIndexer /warehouse/gmall/ods/ods_start_log/dt=$do_date
 hadoop jar $HADOOP_HOME/share/hadoop/common/hadoop-lzo-0.4.20.jar com.hadoop.compression.lzo.DistributedLzoIndexer /warehouse/gmall/ods/ods_event_log/dt=$do_date
 
+
 ch="
-select 'data checking ...';
-select * from "$APP".ods_start_log where dt='"$do_date"' limit 10;
 select * from "$APP".ods_event_log where dt='"$do_date"' limit 10;
 "
 $hive -e "$ch"
