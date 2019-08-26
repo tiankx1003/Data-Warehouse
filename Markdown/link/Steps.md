@@ -320,6 +320,7 @@ delete from user where Host='::1';
 flush privileges;
 \q;
 ```
+### MySQL HA
 
 ### Hive
 ```bash

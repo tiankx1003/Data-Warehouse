@@ -15,32 +15,32 @@ location '/warehouse/gmall/ads/ads_uv_count/';
 -- 导入数据
 insert into table ads_uv_count 
 select  
-  '2019-02-10' dt,
+  '2019-08-24' dt,
    daycount.ct,
    wkcount.ct,
    mncount.ct,
-   if(date_add(next_day('2019-02-10','MO'),-1)='2019-02-10','Y','N') ,
-   if(last_day('2019-02-10')='2019-02-10','Y','N') 
+   if(date_add(next_day('2019-08-24','MO'),-1)='2019-08-24','Y','N') ,
+   if(last_day('2019-08-24')='2019-08-24','Y','N') 
 from 
 (
    select  
-      '2019-02-10' dt,
+      '2019-08-24' dt,
        count(*) ct
    from dws_uv_detail_day
-   where dt='2019-02-10'  
+   where dt='2019-08-24'  
 )daycount join 
 ( 
    select  
-     '2019-02-10' dt,
+     '2019-08-24' dt,
      count (*) ct
    from dws_uv_detail_wk
-   where wk_dt=concat(date_add(next_day('2019-02-10','MO'),-7),'_' ,date_add(next_day('2019-02-10','MO'),-1) )
+   where wk_dt=concat(date_add(next_day('2019-08-24','MO'),-7),'_' ,date_add(next_day('2019-08-24','MO'),-1) )
 ) wkcount on daycount.dt=wkcount.dt
 join 
 ( 
    select  
-     '2019-02-10' dt,
+     '2019-08-24' dt,
      count (*) ct
    from dws_uv_detail_mn
-   where mn=date_format('2019-02-10','yyyy-MM')  
+   where mn=date_format('2019-08-24','yyyy-MM')  
 )mncount on daycount.dt=mncount.dt;
