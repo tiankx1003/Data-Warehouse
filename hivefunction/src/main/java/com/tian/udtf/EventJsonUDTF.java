@@ -42,6 +42,7 @@ public class EventJsonUDTF extends GenericUDTF {
         // 获取传入的et
         String input = objects[0].toString();
 
+        //isBlank和isEmpty的区别
         // 如果传进来的数据为空，直接返回过滤掉该数据
         if (StringUtils.isBlank(input)) {
             return;

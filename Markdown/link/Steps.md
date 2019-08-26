@@ -321,7 +321,7 @@ flush privileges;
 \q;
 ```
 ### MySQL HA
-
+<!-- TODO 添加MySQL HA内容 -->
 ### Hive
 ```bash
 tar -zxvf apache-hive-1.2.1-bin.tar.gz -C /opt/module/
