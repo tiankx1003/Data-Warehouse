@@ -23,3 +23,4 @@ from
 
 -- 3）查询导入数据
 select * from ads_silent_count;
+
