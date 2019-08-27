@@ -11,11 +11,6 @@ STORED AS
   INPUTFORMAT 'com.hadoop.mapred.DeprecatedLzoTextInputFormat'
   OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
 LOCATION '/warehouse/gmall/ods/ods_start_log';
--- 加载数据
-load data inpath '/origin_data/gmall/log/topic_start/2019-08-24' 
-into table gmall.ods_start_log partition(dt='2019-08-24');
--- 验证
-select * from ods_start_log limit 2;
 
 -- 创建事件日志表ods_event_log
 drop table if exists ods_event_log;
@@ -25,8 +20,3 @@ STORED AS
   INPUTFORMAT 'com.hadoop.mapred.DeprecatedLzoTextInputFormat'
   OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
 LOCATION '/warehouse/gmall/ods/ods_event_log';
--- 加载数据
-load data inpath '/origin_data/gmall/log/topic_event/2019-08-24' 
-into table gmall.ods_event_log partition(dt='2019-08-24');
--- 验证
-select * from ods_event_log limit 2;

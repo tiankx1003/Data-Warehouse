@@ -58,6 +58,7 @@ sql="
     concat_ws('|', collect_set(network)) network,
     concat_ws('|', collect_set(lng)) lng,
     concat_ws('|', collect_set(lat)) lat,
+    -- 当前周的周日向前推七天和向前推一天
     date_add(next_day('$do_date','MO'),-7),
     date_add(next_day('$do_date','MO'),-1),
     concat(date_add( next_day('$do_date','MO'),-7), '_' , date_add(next_day('$do_date','MO'),-1) 
