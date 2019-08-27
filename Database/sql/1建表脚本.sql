@@ -1,6 +1,4 @@
- 
- 
- CREATE TABLE `order_info` (
+CREATE TABLE `order_info` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT '编号',
   `consignee` VARCHAR(100) DEFAULT NULL COMMENT '收货人',
   `consignee_tel` VARCHAR(20) DEFAULT NULL COMMENT '收件人电话',
