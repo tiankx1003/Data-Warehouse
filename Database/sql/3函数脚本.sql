@@ -1,3 +1,6 @@
+-- 配置主从复制后需要设置log_bin_trust_function_creators
+-- SHOW VARIABLES LIKE '%log_bin_trust_function_creators%';
+SET GLOBAL log_bin_trust_function_creators=1;
 DELIMITER $$
  
 DROP FUNCTION IF EXISTS `rand_num`$$
