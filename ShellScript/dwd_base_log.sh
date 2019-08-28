@@ -12,6 +12,7 @@ else
 fi 
 
 sql="
+use $APP;
 set hive.exec.dynamic.partition.mode=nonstrict;
 
 insert overwrite table "$APP".dwd_base_event_log partition(dt='$do_date')
@@ -38,6 +39,7 @@ select
     base_analizer(line,'st') as server_time
 from "$APP".ods_event_log lateral view flat_analizer(base_analizer(line,'et')) tem_flat as event_name,event_json
 where dt='$do_date'  and base_analizer(line,'et')<>'';
+select * from "$APP".dwd_base_event_log limit 10;
 "
 
 $hive -e "$sql"

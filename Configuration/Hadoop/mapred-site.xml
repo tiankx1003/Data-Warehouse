@@ -1,5 +1,5 @@
-<?xml version="1.0"?>
-<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl" ?>
 <!--
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -17,16 +17,20 @@
 <!-- Put site-specific property overrides in this file. -->
 
 <configuration>
-<property>
-	<name>mapreduce.framework.name</name>
-	<value>yarn</value>
-</property>
-<property>
-	<name>mapreduce.jobhistory.address</name>
-	<value>hadoop102:10020</value>
-</property>
-<property>
-    <name>mapreduce.jobhistory.webapp.address</name>
-    <value>hadoop102:19888</value>
-</property>
+	<property>
+		<name>mapreduce.framework.name</name>
+		<value>yarn</value>
+	</property>
+	<property>
+		<name>mapreduce.jobhistory.address</name>
+		<value>hadoop102:10020</value>
+	</property>
+	<property>
+		<name>mapreduce.jobhistory.webapp.address</name>
+		<value>hadoop102:19888</value>
+	</property>
+	<property>
+		<name>yarn.log.server.url</name>
+		<value>http://hadoop102:19888/jobhistory/logs</value>
+	</property>
 </configuration>

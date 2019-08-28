@@ -43,10 +43,10 @@ vim /etc/sysconfig/network #修改主机名
 
 ### Hadoop
 
--|hadoop102|hadoop103|hadoop104
-:-:|:-|:-|:-
-**HDFS**|NameNode<br>DataNode|DataNode|SecondaryNameNode<br>DataNode
-**YARN**|NodeManager|ResourceManager<br>NodeManager|NodeManager
+|    -     | hadoop102            | hadoop103                      | hadoop104                     |
+| :------: | :------------------- | :----------------------------- | :---------------------------- |
+| **HDFS** | NameNode<br>DataNode | DataNode                       | SecondaryNameNode<br>DataNode |
+| **YARN** | NodeManager          | ResourceManager<br>NodeManager | NodeManager                   |
 
 ```bash
 vim core-site.xml
@@ -320,7 +320,199 @@ delete from user where Host='::1';
 flush privileges;
 \q;
 ```
+### MySQL HA
+ * 如果Hive元数据配置到了MySQL，需要更改hive-site.xml中javax.jdo.option.ConnectionURL为虚拟ip
+**一主一从**
+| hadoop102 | hadoop103 | hadoop104 |
+| :-------- | :-------- | :-------- |
+| Master    | Slave     |           |
 
+```bash
+# 修改hadoop102中MySQL的/usr/my.cnf配置文件
+sudo vim /usr/my.cnf 
+sudo service mysql restart
+mysql -uroot -proot
+```
+```conf
+[mysqld]
+#开启binlog
+log_bin = mysql-bin
+#MySQL服务器唯一id
+server_id = 1
+```
+```sql
+show master status
+```
+
+```bash
+# 修改hadoop103中MySQL的/usr/my.cnf配置文件
+sudo vim /usr/my.cnf
+sudo service mysql restart
+mysql -uroot -proot
+```
+```conf
+[mysqld]
+#MySQL服务器唯一id
+server_id = 2
+#开启slave中继日志
+relay-log=mysql-relay
+```
+```sql
+CHANGE MASTER TO 
+MASTER_HOST='hadoop102',
+MASTER_USER='root',
+MASTER_PASSWORD='root',
+MASTER_LOG_FILE='mysql-bin.000001',
+MASTER_LOG_POS=120; -- 根据position设置
+start slave;
+show slave status \G;
+```
+**双主**
+| hadoop102     | hadoop103     | hadoop104 |
+| :------------ | :------------ | :-------- |
+| Master(Slave) | Slave(Master) |           |
+
+```bash
+# hadoop102
+sudo vim /usr/my.cnf
+sudo service mysql restart
+mysql -uroot -proot
+# show master status;
+```
+```conf
+[mysqld]
+
+#开启binlog
+log_bin = mysql-bin
+#MySQL服务器唯一id
+server_id = 2
+#开启slave中继日志
+relay-log=mysql-relay
+```
+```bash
+# hadoop103
+sudo vim /usr/my.cnf
+sudo service mysql restart
+mysql -uroot -proot
+```
+```conf
+[mysqld]
+#MySQL服务器唯一id
+server_id = 1
+
+#开启binlog
+log_bin = mysql-bin
+
+#开启slave中继日志
+relay-log=mysql-relay
+```
+```sql
+CHANGE MASTER TO 
+MASTER_HOST='hadoop102',
+MASTER_USER='root',
+MASTER_PASSWORD='root',
+MASTER_LOG_FILE='mysql-bin.000001',
+MASTER_LOG_POS=107;
+```
+**两个节点安装配置Keepalived**
+ * hadoop102
+```bash
+sudo yum install -y keepalived
+sudo chkconfig keepalived on
+sudo vim /etc/keepalived/keepalived.conf
+sudo vim /var/lib/mysql/keepalived.sh
+sudo keepalived start
+```
+```conf
+! Configuration File for keepalived
+global_defs {
+    router_id MySQL-ha
+}
+vrrp_instance VI_1 {
+    state master #初始状态
+    interface eth0 #网卡
+    virtual_router_id 51 #虚拟路由id
+    priority 100 #优先级
+    advert_int 1 #Keepalived心跳间隔
+    nopreempt #只在高优先级配置，原master恢复之后不重新上位
+    authentication {
+        auth_type PASS #认证相关
+        auth_pass 1111
+    }
+    virtual_ipaddress {
+        192.168.1.100 #虚拟ip
+    }
+} 
+
+#声明虚拟服务器
+virtual_server 192.168.2.100 3306 {
+    delay_loop 6
+    persistence_timeout 30
+    protocol TCP
+    #声明真实服务器
+    real_server 192.168.2.102 3306 {
+        notify_down /var/lib/mysql/killkeepalived.sh #真实服务故障后调用脚本
+        TCP_CHECK {
+            connect_timeout 3 #超时时间
+            nb_get_retry 1 #重试次数
+            delay_before_retry 1 #重试时间间隔
+        }
+    }
+}
+```
+```sh
+#!/bin/bash
+sudo service keepalived stop
+```
+ * hadoop103
+```bash
+sudo yum install -y keepalived
+sudo chkconfig keepalived on
+sudo vim /etc/keepalived/keepalived.conf
+sudo vim /var/lib/mysql/killkeepalived.sh
+sudo service keepalived start
+```
+```conf
+! Configuration File for keepalived
+global_defs {
+    router_id MySQL-ha
+}
+vrrp_instance VI_1 {
+    state master #初始状态
+    interface eth0 #网卡
+    virtual_router_id 51 #虚拟路由id
+    priority 100 #优先级
+    advert_int 1 #Keepalived心跳间隔
+    nopreempt #只在高优先级配置，原master恢复之后不重新上位
+    authentication {
+        auth_type PASS #认证相关
+        auth_pass 1111
+    }
+    virtual_ipaddress {
+        192.168.2.100 #虚拟ip
+    }
+} 
+
+#声明虚拟服务器
+virtual_server 192.168.1.100 3306 {
+    delay_loop 6
+    persistence_timeout 30
+    protocol TCP
+    #声明真实服务器
+    real_server 192.168.2.103 3306 {
+        notify_down /var/lib/mysql/killkeepalived.sh #真实服务故障后调用脚本
+        TCP_CHECK {
+            connect_timeout 3 #超时时间
+            nb_get_retry 1 #重试次数
+            delay_before_retry 1 #重试时间间隔
+        }
+    }
+}
+```
+```sh
+#! /bin/bash
+sudo service keepalived stop
+```
 ### Hive
 ```bash
 tar -zxvf apache-hive-1.2.1-bin.tar.gz -C /opt/module/
@@ -337,7 +529,7 @@ bin/hadoop fs -chmod g+w /user/hive/warehouse
 ```
 
 **Hive元数据配置到MySQL**
-
+ * 如果MySQL配置了HA，需要更改hive-site.xml中javax.jdo.option.ConnectionURL为虚拟ip
 ```bash
 # 拷贝驱动
 tar -zxvf mysql-connector-java-5.1.27.tar.gz
@@ -348,6 +540,10 @@ cp mysql-connector-java-5.1.27-bin.jar /opt/module/hive/lib/
 # /opt/module/hive/conf目录下创建一个hive-site.xml
 touch hive-site.xml
 vi hive-site.xml
+pwd
+mv hive-log4j.properties.template hive-log4j.properties
+vim hive-log4j.properties
+# hive.log.dir=/opt/module/hive/logs
 ```
 
 根据官方文档配置参数

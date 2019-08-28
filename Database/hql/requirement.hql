@@ -69,14 +69,42 @@ from
 	from dws_uv_wk
 	where wk_dt=concat(date_add(next_day('2019-08-28','MO'),-7),'_',date_add(next_day('2019-08-28','MO'),-1))) wkcount
 	on daycount.dt=wkcount.dt;
-
+  -- 验证
 select * from ads_uv_count;
 
 -- 2.用户新增主题
-  -- DWS每日新增设备明细表
-
+  -- DWS每日新增设备表
+drop table if exists dws_new_mid_day;
+create external table dws_new_mid_day(
+	mid_id string,os string,create_date string)
+stored as parquet
+location '/warehouse/gmall/dws/dws_new_mid_day';
+  -- 导入数据
+insert into table dws_new_mid_day
+select ud.mid_id,ud.os,'2019-08-28' dt
+from 
+	dws_uv_day ud 
+	left join dws_new_mid_day nm
+	on ud.mid_id=nm.mid_id
+where ud.dt='2019-08-28' and nm.mid_id is null; -- 通过left join去除已有的即为新增的
+  -- 验证
+select * from dws_new_mid_day limit 10;
 
   -- ADS每日新增设备表
+drop table if exists ads_new_mid_count;
+create external table ads_new_mid_count(
+	create_date string, new_mid_count bigint)
+row format delimited fields terminated by '\t'
+location '/warehouse/gmall/ads/ads_new_mid_count';
+
+  -- 导入数据
+insert into table ads_new_mid_count
+select create_date, count(*)
+from dws_new_mid_day
+where create_date='2019-08-28'
+group by create_date;
+  --验证
+select * from ads_new_mid_count;
 
 -- 3.用户留存主题
   -- DWS每日留存用户明细表

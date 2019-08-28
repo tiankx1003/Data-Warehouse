@@ -6,7 +6,7 @@ create external table dws_uv_detail_day
     `mid_id` string COMMENT '设备唯一标识',
     `user_id` string COMMENT '用户标识', 
     `version_code` string COMMENT '程序版本号', 
-    `version_name` string COMMENT '程序版本名', 
+    `version_name` string COMMENT '程序版本名',
     `lang` string COMMENT '系统语言', 
     `source` string COMMENT '渠道号', 
     `os` string COMMENT '安卓系统版本', 
@@ -81,7 +81,7 @@ location '/warehouse/gmall/dws/dws_uv_detail_mn/';
 -- 数据加载语句
 set hive.exec.dynamic.partition.mode=nonstrict;
 
-insert overwrite table "$APP".dws_uv_detail_day partition(dt='$do_date')
+insert overwrite table gmall.dws_uv_detail_day partition(dt='2019-08-24')
 select  
     mid_id,
     concat_ws('|', collect_set(user_id)) user_id,
@@ -100,12 +100,12 @@ select
     concat_ws('|', collect_set(network)) network,
     concat_ws('|', collect_set(lng)) lng,
     concat_ws('|', collect_set(lat)) lat
-from "$APP".dwd_start_log
-where dt='$do_date'  
+from gmall.dwd_start_log
+where dt='2019-08-24'  
 group by mid_id;
 
 
-insert overwrite table "$APP".dws_uv_detail_wk partition(wk_dt)
+insert overwrite table gmall.dws_uv_detail_wk partition(wk_dt)
 select  
     mid_id,
     concat_ws('|', collect_set(user_id)) user_id,
@@ -124,16 +124,16 @@ select
     concat_ws('|', collect_set(network)) network,
     concat_ws('|', collect_set(lng)) lng,
     concat_ws('|', collect_set(lat)) lat,
-    date_add(next_day('$do_date','MO'),-7),
-    date_add(next_day('$do_date','MO'),-1),
-    concat(date_add( next_day('$do_date','MO'),-7), '_' , date_add(next_day('$do_date','MO'),-1) 
+    date_add(next_day('2019-08-24','MO'),-7),
+    date_add(next_day('2019-08-24','MO'),-1),
+    concat(date_add( next_day('2019-08-24','MO'),-7), '_' , date_add(next_day('2019-08-24','MO'),-1) 
     )
-from "$APP".dws_uv_detail_day
-where dt>=date_add(next_day('$do_date','MO'),-7) and dt<=date_add(next_day('$do_date','MO'),-1) 
+from gmall.dws_uv_detail_day
+where dt>=date_add(next_day('2019-08-24','MO'),-7) and dt<=date_add(next_day('2019-08-24','MO'),-1) 
 group by mid_id; 
 
 
-insert overwrite table "$APP".dws_uv_detail_mn partition(mn)
+insert overwrite table gmall.dws_uv_detail_mn partition(mn)
 select
     mid_id,
     concat_ws('|', collect_set(user_id)) user_id,
@@ -152,7 +152,7 @@ select
     concat_ws('|', collect_set(network)) network,
     concat_ws('|', collect_set(lng)) lng,
     concat_ws('|', collect_set(lat)) lat,
-    date_format('$do_date','yyyy-MM')
-from "$APP".dws_uv_detail_day
-where date_format(dt,'yyyy-MM') = date_format('$do_date','yyyy-MM')   
+    date_format('2019-08-24','yyyy-MM')
+from gmall.dws_uv_detail_day
+where date_format(dt,'yyyy-MM') = date_format('2019-08-24','yyyy-MM')   
 group by mid_id;

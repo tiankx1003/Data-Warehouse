@@ -13,6 +13,8 @@ case $1 in
         do
                 echo " --------停止 $i 消费flume-------"
                 ssh $i "ps -ef | grep kafka-flume-hdfs | grep -v grep |awk '{print \$2}' | xargs kill"
+		ssh $i "ps -ef | grep kafka-flume-hdfs | grep -v grep |awk '{print \$2}' | xargs kill -9"
+                
         done
 };;
 esac
