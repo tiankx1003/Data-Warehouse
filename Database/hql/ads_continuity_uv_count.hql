@@ -17,26 +17,26 @@ from
 (
     select mid_id
     from
-    (
-        select mid_id      
-        from
         (
-            select 
-                mid_id,
-                date_sub(dt,rank) date_dif
+            select mid_id      
             from
-            (
-                select 
-                    mid_id,
-                    dt,
-                    rank() over(partition by mid_id order by dt) rank
-                from dws_uv_detail_day
-                where dt>=date_add('2019-02-12',-6) and dt<='2019-02-12'
-            )t1
-        )t2 
-        group by mid_id,date_dif
-        having count(*)>=3
-    )t3 
+                (
+                    select 
+                        mid_id,
+                        date_sub(dt,rank) date_dif
+                    from
+                    (
+                        select 
+                            mid_id,
+                            dt,
+                            rank() over(partition by mid_id order by dt) rank
+                        from dws_uv_detail_day
+                        where dt>=date_add('2019-02-12',-6) and dt<='2019-02-12'
+                    )t1
+                )t2 
+            group by mid_id,date_dif
+            having count(*)>=3
+        )t3 
     group by mid_id
 )t4;
 -- 3）查询

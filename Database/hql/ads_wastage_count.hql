@@ -14,7 +14,7 @@ select
 from 
 (
     select mid_id
-from dws_uv_detail_day
+    from dws_uv_detail_day
     group by mid_id
     having max(dt)<=date_add('2019-02-20',-7)
 )t1;
