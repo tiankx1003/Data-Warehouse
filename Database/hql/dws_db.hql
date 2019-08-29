@@ -19,7 +19,7 @@ tmp_order as
 (
     select 
         user_id, 
-count(*)  order_count,
+        count(*)  order_count,
         sum(oi.total_amount) order_amount
     from dwd_order_info oi
     where date_format(oi.create_time,'yyyy-MM-dd')='2019-08-28'

@@ -1,4 +1,0 @@
-type=command
-do_date=${dt}
-dependencies=import
-command=/home/tian/bin/ods_db.sh ${do_date}

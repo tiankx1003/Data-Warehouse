@@ -1,3 +1,0 @@
-type=command
-dependencies=ads
-command=/home/tian/bin/sqoop_export.sh ads_gmv_sum_day
