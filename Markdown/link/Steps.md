@@ -605,3 +605,153 @@ name string);
 insert into student values(1,"lisi");
 select * from student;
 ```
+
+### Sqoop
+
+```bash
+tar -zxf sqoop-1.4.6.bin__hadoop-2.0.4-alpha.tar.gz -C /opt/module/
+mv sqoop-1.4.6.bin__hadoop-2.0.4-alpha/ sqoop/
+vim /etc/profile
+source /etc/profile # 配置环境变量
+mv sqoop-env-template.sh sqoop-env.sh
+vim sqoop-env.sh # 添加下述配置
+# 拷贝MySQL驱动到lib
+cp mysql-connector-java-5.1.27-bin.jar /opt/module/sqoop/lib/
+```
+```
+export HADOOP_COMMON_HOME=/opt/module/hadoop-2.7.2
+export HADOOP_MAPRED_HOME=/opt/module/hadoop-2.7.2
+export HIVE_HOME=/opt/module/hive
+export ZOOKEEPER_HOME=/opt/module/zookeeper
+export ZOOCFGDIR=/opt/module/zookeeper/conf
+export HBASE_HOME=/opt/module/hbase
+```
+```bash
+# 验证Sqoop
+bin/sqoop help
+# Available commands:
+#   codegen            Generate code to interact with database records
+#   create-hive-table     Import a table definition into Hive
+#   eval               Evaluate a SQL statement and display the results
+#   export             Export an HDFS directory to a database table
+#   help               List available commands
+#   import             Import a table from a database to HDFS
+#   import-all-tables     Import tables from a database to HDFS
+#   import-mainframe    Import datasets from a mainframe server to HDFS
+#   job                Work with saved jobs
+#   list-databases        List available databases on a server
+#   list-tables           List available tables in a database
+#   merge              Merge results of incremental imports
+#   metastore           Run a standalone Sqoop metastore
+#   version            Display version information
+```
+```bash
+# 测试Sqoop是否能够成功连接数据库
+bin/sqoop list-databases --connect jdbc:mysql://hadoop102:3306/ --username root --password root
+# information_schema
+# metastore
+# mysql
+# oozie
+# performance_schema
+```
+
+### Azkaban
+
+[下载地址](http://azkaban.github.io/downloads.html)
+
+```bash
+mkdir /opt/module/azkaban
+tar -zxvf azkaban-web-server-2.5.0.tar.gz -C /opt/module/azkaban/
+tar -zxvf azkaban-executor-server-2.5.0.tar.gz -C /opt/module/azkaban/
+tar -zxvf azkaban-sql-script-2.5.0.tar.gz -C /opt/module/azkaban/
+mv azkaban-web-2.5.0/ server
+mv azkaban-executor-2.5.0/ executor
+mysql -uroot -proot # 建表
+keytool -keystore keystore -alias jetty -genkey -keyalg RSA # 生成密钥和整数
+tzselect # 同步时间
+```
+
+```sql
+create database azkaban;
+use azkaban;
+source /opt/module/azkaban/azkaban-2.5.0/create-all-sql-2.5.0.sql;
+```
+
+```bash
+# Web Server 配置
+vim /opt/module/azkaban/server/conf/azkaban.properties
+vim /opt/module/azkaban/server/conf/azkaban-users.xml
+```
+
+```properties
+#默认web server存放web文件的目录
+web.resource.dir=/opt/module/azkaban/server/web/
+#默认时区,已改为亚洲/上海 默认为美国
+default.timezone.id=Asia/Shanghai
+#用户权限管理默认类（绝对路径）
+user.manager.xml.file=/opt/module/azkaban/server/conf/azkaban-users.xml
+#global配置文件所在位置（绝对路径）
+executor.global.properties=/opt/module/azkaban/executor/conf/global.properties
+#数据库连接IP
+mysql.host=hadoop100
+#数据库用户名
+mysql.user=root
+#数据库密码
+mysql.password=root
+#SSL文件名（绝对路径）
+jetty.keystore=/opt/module/azkaban/server/keystore
+#SSL文件密码
+jetty.password=000000
+#Jetty主密码与keystore文件相同
+jetty.keypassword=000000
+#SSL文件名（绝对路径）
+jetty.truststore=/opt/module/azkaban/server/keystore
+#SSL文件密码
+jetty.trustpassword=000000
+# mial settings
+mail.sender=Tiankx1003@gmial.com
+mail.host= stmp.gmail.com
+mail.user=Tiankx1003@gmail.com
+mail.password=Tt181024
+# web 配置
+job.failure.email= 
+# web 配置
+joa.success.email= 
+```
+
+```xml
+<azkaban-users>
+	<user username="azkaban" password="azkaban" roles="admin" groups="azkaban" />
+	<user username="metrics" password="metrics" roles="metrics"/>
+	<user username="admin" password="admin" roles="admin,metrics"/>
+	<role name="admin" permissions="ADMIN" />
+	<role name="metrics" permissions="METRICS"/>
+</azkaban-users>
+```
+
+```bash
+# Executor Server 配置
+vim /opt/module/azkaban/server/conf/azkaban.properties
+```
+
+```properties
+#时区
+default.timezone.id=Asia/Shanghai
+executor.global.properties=/opt/module/azkaban/executor/conf/global.properties
+mysql.host=hadoop100
+mysql.database=azkaban
+mysql.user=root
+mysql.password=root
+```
+
+先启动executor在执行web，避免web server因为找不到executor启动失败
+
+```bash
+bin/azkaban-executor-start.sh # executor
+bin/azkaban-web-start.sh # server
+jps
+bin/azkaban-executor-shutdown.sh
+bin/azkaban-web-shutdown.sh
+```
+
+[Web页面查看 https://hadoop102:8443](hattps://hadoop101:8443)
