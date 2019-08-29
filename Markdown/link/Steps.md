@@ -605,3 +605,52 @@ name string);
 insert into student values(1,"lisi");
 select * from student;
 ```
+
+### Sqoop
+
+```bash
+tar -zxf sqoop-1.4.6.bin__hadoop-2.0.4-alpha.tar.gz -C /opt/module/
+mv sqoop-1.4.6.bin__hadoop-2.0.4-alpha/ sqoop/
+vim /etc/profile
+source /etc/profile # 配置环境变量
+mv sqoop-env-template.sh sqoop-env.sh
+vim sqoop-env.sh # 添加下述配置
+# 拷贝MySQL驱动到lib
+cp mysql-connector-java-5.1.27-bin.jar /opt/module/sqoop/lib/
+```
+```
+export HADOOP_COMMON_HOME=/opt/module/hadoop-2.7.2
+export HADOOP_MAPRED_HOME=/opt/module/hadoop-2.7.2
+export HIVE_HOME=/opt/module/hive
+export ZOOKEEPER_HOME=/opt/module/zookeeper
+export ZOOCFGDIR=/opt/module/zookeeper/conf
+export HBASE_HOME=/opt/module/hbase
+```
+```bash
+# 验证Sqoop
+bin/sqoop help
+# Available commands:
+#   codegen            Generate code to interact with database records
+#   create-hive-table     Import a table definition into Hive
+#   eval               Evaluate a SQL statement and display the results
+#   export             Export an HDFS directory to a database table
+#   help               List available commands
+#   import             Import a table from a database to HDFS
+#   import-all-tables     Import tables from a database to HDFS
+#   import-mainframe    Import datasets from a mainframe server to HDFS
+#   job                Work with saved jobs
+#   list-databases        List available databases on a server
+#   list-tables           List available tables in a database
+#   merge              Merge results of incremental imports
+#   metastore           Run a standalone Sqoop metastore
+#   version            Display version information
+```
+```bash
+# 测试Sqoop是否能够成功连接数据库
+bin/sqoop list-databases --connect jdbc:mysql://hadoop102:3306/ --username root --password root
+# information_schema
+# metastore
+# mysql
+# oozie
+# performance_schema
+```
