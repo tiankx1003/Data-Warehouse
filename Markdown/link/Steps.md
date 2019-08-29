@@ -667,7 +667,7 @@ tar -zxvf azkaban-sql-script-2.5.0.tar.gz -C /opt/module/azkaban/
 mv azkaban-web-2.5.0/ server
 mv azkaban-executor-2.5.0/ executor
 mysql -uroot -proot # 建表
-keytool -keystore keystore -alias jetty -genkey -keyalg RSA # 生成密钥和整数
+keytool -keystore keystore -alias jetty -genkey -keyalg RSA # 在server目录下生成密钥和整数
 tzselect # 同步时间
 ```
 
@@ -709,7 +709,7 @@ jetty.truststore=/opt/module/azkaban/server/keystore
 #SSL文件密码
 jetty.trustpassword=000000
 # mial settings
-mail.sender=Tiankx1003@gmial.com
+mail.sender=Tiankx1003@gmail.com
 mail.host= stmp.gmail.com
 mail.user=Tiankx1003@gmail.com
 mail.password=Tt181024
@@ -731,7 +731,7 @@ joa.success.email=
 
 ```bash
 # Executor Server 配置
-vim /opt/module/azkaban/server/conf/azkaban.properties
+vim /opt/module/azkaban/executor/conf/azkaban.properties
 ```
 
 ```properties
@@ -754,4 +754,4 @@ bin/azkaban-executor-shutdown.sh
 bin/azkaban-web-shutdown.sh
 ```
 
-[Web页面查看 https://hadoop102:8443](hattps://hadoop101:8443)
+[Web页面查看 https://hadoop102:8443](https://hadoop102:8443)

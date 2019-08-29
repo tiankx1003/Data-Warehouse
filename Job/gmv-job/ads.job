@@ -1,4 +1,4 @@
 type=command
 do_date=${dt}
 dependencies=dws
-command=/home/tian/bin/ads_db_gmv.sh ${do_date}
+command=/home/tian/bin/ads_db_gmv ${do_date}
