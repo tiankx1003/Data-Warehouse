@@ -36,15 +36,15 @@ tmp_detail as
         count(*) order_count, 
         sum(od.order_price*sku_num) order_amount
     from dwd_order_detail od
-    where od.dt='2019-02-10'
+    where od.dt='2019-08-28'
     group by user_id, sku_id
 )  
-insert overwrite table dws_sale_detail_daycount partition(dt='2019-02-10')
+insert overwrite table dws_sale_detail_daycount partition(dt='2019-08-28')
 select 
     tmp_detail.user_id,
     tmp_detail.sku_id,
     u.gender,
-    months_between('2019-02-10', u.birthday)/12  age, 
+    months_between('2019-08-28', u.birthday)/12  age, 
     u.user_level,
     price,
     sku_name,
@@ -60,6 +60,6 @@ select
     tmp_detail.order_count,
     tmp_detail.order_amount 
 from tmp_detail 
-left join dwd_user_info u on tmp_detail.user_id =u.id and u.dt='2019-02-10'
-left join dwd_sku_info s on tmp_detail.sku_id =s.id and s.dt='2019-02-10'
+left join dwd_user_info u on tmp_detail.user_id =u.id and u.dt='2019-08-28'
+left join dwd_sku_info s on tmp_detail.sku_id =s.id and s.dt='2019-08-28'
 ;

@@ -27,8 +27,8 @@ select
     sum(if(mn.order_count>=2,1,0))/sum( if(mn.order_count>=1,1,0)) buyTwiceLastRatio,
     sum(if(mn.order_count>=3,1,0))  buy3timeLast  ,
     sum(if(mn.order_count>=3,1,0))/sum( if(mn.order_count>=1,1,0)) buy3timeLastRatio ,
-    date_format('2019-02-10' ,'yyyy-MM') stat_mn,
-    '2019-02-10' stat_date
+    date_format('2019-08-28' ,'yyyy-MM') stat_mn,
+    '2019-08-28' stat_date
 from 
 (
 select 
@@ -38,7 +38,7 @@ sd.sku_tm_id,
         sd.sku_category1_name,
         sum(order_count) order_count
     from dws_sale_detail_daycount sd 
-    where date_format(dt,'yyyy-MM')=date_format('2019-02-10' ,'yyyy-MM')
+    where date_format(dt,'yyyy-MM')=date_format('2019-08-28' ,'yyyy-MM')
     group by user_id, sd.sku_tm_id, sd.sku_category1_id, sd.sku_category1_name
 ) mn
 group by mn.sku_tm_id, mn.sku_category1_id, mn.sku_category1_name

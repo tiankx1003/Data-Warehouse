@@ -22,7 +22,7 @@ tmp_order as
 count(*)  order_count,
         sum(oi.total_amount) order_amount
     from dwd_order_info oi
-    where date_format(oi.create_time,'yyyy-MM-dd')='2019-02-10'
+    where date_format(oi.create_time,'yyyy-MM-dd')='2019-08-28'
     group by user_id
 ) ,
 tmp_payment as
@@ -32,7 +32,7 @@ tmp_payment as
         sum(pi.total_amount) payment_amount, 
         count(*) payment_count 
     from dwd_payment_info pi 
-    where date_format(pi.payment_time,'yyyy-MM-dd')='2019-02-10'
+    where date_format(pi.payment_time,'yyyy-MM-dd')='2019-08-28'
     group by user_id
 ),
 tmp_comment as
@@ -41,11 +41,11 @@ tmp_comment as
         user_id,
         count(*) comment_count
     from dwd_comment_log c
-    where date_format(c.dt,'yyyy-MM-dd')='2019-02-10'
+    where date_format(c.dt,'yyyy-MM-dd')='2019-08-28'
     group by user_id
 )
 
-insert overwrite table dws_user_action partition(dt='2019-02-10')
+insert overwrite table dws_user_action partition(dt='2019-08-28')
 select
     user_actions.user_id,
     sum(user_actions.order_count),
