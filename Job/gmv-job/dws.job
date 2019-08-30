@@ -1,4 +1,0 @@
-type=command
-do_date=${dt}
-dependencies=dwd
-command=/home/tian/bin/dws_db ${do_date}

@@ -1,3 +1,0 @@
-type=command
-do_date=${dt}
-command=/home/tian/bin/sqoop_import all ${do_date}
