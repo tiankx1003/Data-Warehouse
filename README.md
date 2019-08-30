@@ -13,6 +13,7 @@
 | **Markdown**             | 数据仓库各个阶段的的技术文档               |
 | **ShellScript**          | 服务器端的自定义脚本文件，主要用于启停进程 |
 | **flumeinterceptor**     | Flume自定义拦截器                          |
+| **xmind**                | 脑图                                       |
 
 ## 完成进度
 
