@@ -31,9 +31,9 @@ select
     '2019-08-28' stat_date
 from 
 (
-select 
+    select 
         user_id, 
-sd.sku_tm_id,
+        sd.sku_tm_id,
         sd.sku_category1_id,
         sd.sku_category1_name,
         sum(order_count) order_count

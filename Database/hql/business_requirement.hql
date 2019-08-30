@@ -115,6 +115,90 @@ stored as parquet
 location '/warehouse/gmall/dws/dws_user_sale_detail_daycount/'
 tblproperties("parquet.compression"="snappy");
 
-
+  -- 插入数据
+	-- 临时表,通过订单详情表得到指定日期每个人的用户编号和每个商品的、商品编号、商品数量、订单数、下单金额
+insert into table dws_sale_detail_daycount
+with tmp_detail
+as(
+	select
+		user_id,
+		sku_id,
+		sum(sku_num) sku_num,
+		count(*) order_count,
+		sum(od.order_price*sku_num) order_amount
+	from dwd_order_detail od
+	where od.dt='2019-08-28'
+	group by user_id, sku_id
+)
+select
+    td.user_id,
+    td.sku_id,
+    ui.gender,
+    -- ui.age,
+    ceil(month_between('2019-08-28',ui.birthday)/12),
+    ui.level,
+    si.price,
+    si.name,
+    si.tm_id,
+    si.category3_id,
+    si.category2_id,
+    si.category1_id,
+    si.category3_name,
+    si.category2_name,
+    si.category1_name,
+    si.spu_id,
+    td.sku_num,
+    td.order_count,
+    td.order_amount
+from
+    tmp_detail td
+    left join dwd_user_info ui
+    on td.user_id=ui.id and dt='2019-08-28'
+    left join dwd_sku_info si
+    on td.sku_id=si.id and dt='2019-08-28';
 
   -- ADS - 品牌复购率
+  -- 建表
+drop table if exists ads_sale_tm_category1_stat_mn;
+create external table ads_sale_tm_category1_stat_mn(
+	tm_id string comment '品牌id',
+	category1_id string comment '1级品类编号',
+	category1_name string comment '1级品类名称',
+	buycount bigint comment '购买人数',
+	buy_twice_last bigint comment '两次以上购买人数',
+	buy_twice_last_ratio bigint comment '单次复购率',
+	buy_3times_last bigint comment '三次以上购买人数',
+	buy_3times_last_ratio decimal(10,2) comment '多次复购率',
+	stat_mn string comment '统计月份',
+	stat_date string comment '统计日期'
+) comment '复购率统计'
+row format delimited fields terminated by '\t'
+location '/warehouse/gmail/ads/ads_sale_tm_category1_stat_mn';
+
+  -- 插入数据
+insert into table ads_stat_tm_category1_stat_mn
+select
+	mn.sku_tm_id,
+	mn.category1_id,
+	mn.category1_name,
+	sum(if(mn.order_count>1,1,0)) buycount,
+	sum(if(mn.order_count>2,1,0)) buy_twice_last,
+	sum(if(mn.order_count>2,1,0))/sum(if(mn.order_count>1,1,0)) buy_twice_last_ratio,
+	sum(if(mn.order_count>3,1,0)) buy_3times_last,
+	sum(if(mn.order_count>3,1,0))/sum(if(mn.order_count>1,1,0)) buy_3times_last_ratio,
+	date_format('2019-08-28','yyyy-MM') stat_mn,
+	'2019-08-28' stat_date
+from
+	(
+		select
+			user_id,
+			sd.sku_tm_id,
+			sd.sku_category1_id,
+			sd.sku_category1_name
+			sum(order_count) order_count
+		from dws_sale_detail_daycount sd
+		where date_format(dt,'yyyy-MM')=date_format('2019-08-28','yyyy-MM')
+		group by user_id, sd.sku_tm_id, sd.sku_category1_id, sd.sku_category1_name
+	) mn
+group by mn.sku_tm_id, mn.sku_category1_id, mn.sku_category1_name;
+
