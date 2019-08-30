@@ -755,3 +755,138 @@ bin/azkaban-web-shutdown.sh
 ```
 
 [Web页面查看 https://hadoop102:8443](https://hadoop102:8443)
+
+
+### Presto
+
+#### Presto Server
+```bash
+tar -zxvf presto-server-0.196.tar.gz -C /opt/module/
+mv presto-server-0.196/ presto
+# 在presto目录下创建存储数据文件夹和存储配置文件文件夹
+mkdir data
+mkdir etc
+# etc/下添加jvm.configh文件和catalog目录
+vim jvm.config
+# 在catalog目录下创建hive.properties文件
+vim properties
+xsync /opt/module/presto # 分发
+# 每个节点配置/opt/module/presto/etc/node.properties
+xcall vim /opt/module/presto/etc/node.properties
+# hadoop102配置coordinator节点，其他配置worker节点
+xcall vim /opt/module/presto/etc/config.properties
+```
+```conf
+-server
+-Xmx16G
+-XX:+UseG1GC
+-XX:G1HeapRegionSize=32M
+-XX:+UseGCOverheadLimit
+-XX:+ExplicitGCInvokesConcurrent
+-XX:+HeapDumpOnOutOfMemoryError
+-XX:+ExitOnOutOfMemoryError
+```
+```properties
+connector.name=hive-hadoop2
+hive.metastore.uri=thrift://hadoop102:9083
+```
+```properties
+# hadoop102
+node.environment=production
+node.id=ffffffff-ffff-ffff-ffff-ffffffffffff
+node.data-dir=/opt/module/presto/data
+
+# hadoop103
+node.environment=production
+node.id=ffffffff-ffff-ffff-ffff-fffffffffffe
+node.data-dir=/opt/module/presto/data
+
+# hadoop104
+node.environment=production
+node.id=ffffffff-ffff-ffff-ffff-fffffffffffd
+node.data-dir=/opt/module/presto/data
+```
+```properties
+# hadoop102
+coordinator=true
+node-scheduler.include-coordinator=false
+http-server.http.port=8881
+query.max-memory=50GB
+discovery-server.enabled=true
+discovery.uri=http://hadoop102:8881
+
+# hadoop103
+coordinator=false
+http-server.http.port=8881
+query.max-memory=50GB
+discovery.uri=http://hadoop102:8881
+
+# hadoop104
+coordinator=false
+http-server.http.port=8881
+query.max-memory=50GB
+discovery.uri=http://hadoop102:8881
+```
+```bash
+# 前台启动Presto控制台显示日志
+xcall /opt/module/presto/launcher run
+# 后台启动Presto
+xcall /opt/module/presto/launcher start
+# 日志查看路径/opt/module/presto/data/var/log
+```
+
+#### Presto Client
+```bash
+# 上传presto-cli-0.196-executable.jar至/opt/module/presto
+# 修改文件名并增加执行权限
+mv presto-cli-0.196-executable.jar  prestocli
+chmod +x prestocli
+# 启动prestocli
+./prestocli --server hadoop102:8881 --catalog hive --schema default
+```
+ * Presto命令行操作相当于hive命令行操作，每个表必须加上schema，如`select * from schema.table limit 100`
+
+#### Presto 可视化Client
+```bash
+# 上传yanagishima-18.0.zip至module并解压
+unzip yanagishima-18.0.zip
+cd yanagishima-18.0
+# /opt/module/yanagishima-18.0/conf下编辑yanagishima.properties
+vim yanagishima.properties
+# /opt/module/yanagishima-18.0/下启动yanagishima-18.0
+nohup bin/yanagishima-start.sh >y.log 2>&1 &
+```
+```properties
+jetty.port=7080
+presto.datasources=atiguigu-presto
+presto.coordinator.server.atiguigu-presto=http://hadoop102:8881
+catalog.atiguigu-presto=hive
+schema.atiguigu-presto=default
+sql.query.engines=presto
+```
+查看Web页面http://hadoop102:7080
+
+### Druid
+```bash
+tar -zxvf imply-2.7.10.tar.gz -C /opt/module
+mv imply-2.7.10/ imply
+# 修改Druid的zk配置
+vim /opt/module/imply/conf/druid/_common/common.runtime.properties
+#添加配置: druid.zk.service.host=hadoop102:2181,hadoop103:2181,hadoop104:2181
+# 修改启动命令参数，使其不校验不启动内置zk
+vim /opt/module/imply/conf/supervise/quickstart.conf # 添加下述配置
+```
+```conf
+:verify bin/verify-java
+#:verify bin/verify-default-ports
+#:verify bin/verify-version-check
+:kill-timeout 10
+#!p10 zk bin/run-zk conf-quickstart
+```
+
+```bash
+# 先zk
+# 启动imply
+bin/supervise  -c conf/supervise/quickstart.conf
+# 说明：每启动一个服务均会打印出一条日志。可以通过/opt/module/imply/var/sv/查看服务启动时的日志信息
+```
