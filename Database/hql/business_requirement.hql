@@ -183,9 +183,9 @@ select
 	mn.category1_name,
 	sum(if(mn.order_count>1,1,0)) buycount,
 	sum(if(mn.order_count>2,1,0)) buy_twice_last,
-	sum(if(mn.order_count>2,1,0))/sum(if(mn.order_count>1,1,0)) buy_twice_last_ratio,
+	cast(sum(if(mn.order_count>2,1,0))/sum(if(mn.order_count>1,1,0))as decimal(10,2)) buy_twice_last_ratio,
 	sum(if(mn.order_count>3,1,0)) buy_3times_last,
-	sum(if(mn.order_count>3,1,0))/sum(if(mn.order_count>1,1,0)) buy_3times_last_ratio,
+	cast(sum(if(mn.order_count>3,1,0))/sum(if(mn.order_count>1,1,0))as decimal(10,2)) buy_3times_last_ratio,
 	date_format('2019-08-28','yyyy-MM') stat_mn,
 	'2019-08-28' stat_date
 from
@@ -202,3 +202,37 @@ from
 	) mn
 group by mn.sku_tm_id, mn.sku_category1_id, mn.sku_category1_name;
 
+-- 每个等级的用户对应的复购率前十的商品排行
+  -- 建表语句
+drop table if exists ads_rebuy_ratio_sku_top10(
+	user_level string '用户等级',
+	sku_id string '商品id',
+	rebuy_ratio decimal(10,2) comment '复购率',
+	rank_num int comment '排名'
+) comment '每个等级的用户对应的复购率前十的商品排行'
+row format delimited fields terminated by '\t'
+location '/warehouse/gmall/ads/ads_reuy_ratio_sku_top10';
+
+  -- 插入数据
+insert into table ads_rabuy_ratio_sku_top10
+select
+    t2.user_level,
+    t2.sku_id,
+    t2.rebuy_ratio,
+    t2.rank_num
+from(
+    select 
+        t1.user_level user_level,
+        t1.sku_id sku_id,
+        t1.rebuy_ratio rebuy_ratio,
+        rank() over(order by rebuy_ratio desc) rank_num
+    from
+        (select
+            user_level,
+            sku_id,
+            cast(sum(if(mn.order_count>2,1,0))/sum(if(mn.order_count>1,1,0))as decimal(10,2)) rebuy_ratio
+        from dws_sal_detail_daycount
+        where dt='2019-08-28'
+        group by user_level,sku_id) t1
+        )t2
+where rank_num<=10;
