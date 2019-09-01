@@ -19,8 +19,7 @@ partitioned by(wk_dt string)
 stored as parquet
 location '/warehouse/gmall/dws/dws_uv_wk';
 
-  -- 插入数据,TODO 同组的os字段未发生拼接聚合，自动去重?
-  
+  -- 插入数据
 insert overwrite table dws_uv_day partition(dt)
 select mid_id,
     concat_ws('|',collect_set(os))  os, -- 根据mid_id分组后使用collect_set函数把每组的os聚合成数组，在使用concat拼接
@@ -308,7 +307,7 @@ from
 		select mid_id
 		from dws_uv_wk
 		where wk_dt>=concat_ws(date_add('2019-08-28',-21),'_',date_add('2019-08-28',-14-1)) and 
-			wk_dt>=concat_ws(date_add('2019-08-28',-7),'_',date_add('2019-08-28',-1))
+			wk_dt<=concat_ws(date_add('2019-08-28',-7),'_',date_add('2019-08-28',-1))
 		group by mid_id
 		having count(*)=3
 	) t1;

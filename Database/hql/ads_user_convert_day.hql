@@ -23,7 +23,7 @@ from
         day_count dc,
         0 nmc
     from ads_uv_count
-where dt='2019-08-28'
+    where dt='2019-08-28'
 
     union all
     select
