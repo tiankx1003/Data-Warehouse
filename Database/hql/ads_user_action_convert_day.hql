@@ -30,7 +30,9 @@ from
         from dws_user_action
         where dt='2019-08-28'
         group by dt
-    )ua join ads_uv_count  uv on uv.dt=ua.dt
+    )ua 
+    join ads_uv_count  uv 
+    on uv.dt=ua.dt
 ;
 -- 查询导入数据
 select * from ads_user_action_convert_day;
