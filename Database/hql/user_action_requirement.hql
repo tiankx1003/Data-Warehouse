@@ -328,7 +328,7 @@ insert into table ads_continuity_uv_count
 select 
 	'2019-08-28' dt,
 	concat_ws(date_add('2019-08-28',-6),'_','2019-08-28') wk_dt,
-	count(*) countinuity_count
+	count(*) coutinuity_count
 from
 	(
 		select mid_id
