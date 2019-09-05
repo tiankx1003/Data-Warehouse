@@ -299,6 +299,7 @@ sudo rpm -ivh MySQL-server-5.5.54-1.linux2.6.x86_64.rpm
 mysqladmin --version #查看mysql版本
 rpm -qa|grep MySQL #查看mysql是否安装完成
 sudo service mysql restart # 重启服务
+cat /root/.mysql_secret
 mysqladmin -u root password #设置密码,需要先启动服务
 ```
 ```sql
@@ -558,7 +559,7 @@ beeline
 
 ### Tez
 ```bash
-tar -zxvf apache-tez-0.9.1-bin.tar.gz /opt/module/
+tar -zxvf apache-tez-0.9.1-bin.tar.gz -C /opt/module/
 mv apache-tez-0.9.1-bin/ tez-0.9.1
 # Hive配置Tez
 vim hive-env.sh
@@ -590,6 +591,16 @@ export HIVE_AUX_JARS_PATH=/opt/module/hadoop-2.7.2/share/hadoop/common/hadoop-lz
 	</property>
 ```
 /opt/module/hive/conf目录下添加[**tez-site.xml**](../../Configuration/tez-site.xml)
+```bash
+vim $HADOOP_HOME/etc/hadoop/yarn-site.xml
+```
+```xml
+<!-- 关闭内存检查防止杀进程 -->
+<property>
+    <name>yarn.nodemanager.vmem-check-enabled</name>
+    <value>false</value>
+</property>
+```
 ```bash
 # 上传tez到HDFS
 hadoop fs -mkdir /tez
