@@ -208,7 +208,7 @@ vim flume-env.sh
 ```
 ### Kafka
 ```bash
-software]$ tar -zxvf kafka_2.11-0.11.0.0.tgz -C /opt/module/
+tar -zxvf kafka_2.11-0.11.0.0.tgz -C /opt/module/
 mv kafka_2.11-0.11.0.0/ kafka
 mkdir logs
 cd config/
@@ -277,7 +277,7 @@ export HBASE_MANAGES_ZK=false
 
 	<property>   
 		<name>hbase.zookeeper.property.dataDir</name>
-	     <value>/opt/module/zookeeper-3.4.10/zkData</value>
+	     <value>/opt/module/zookeeper/zkData</value>
 	</property>
 </configuration>
 ```
