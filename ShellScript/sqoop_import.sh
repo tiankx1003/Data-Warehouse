@@ -6,7 +6,7 @@ db_name=gmall
 
 import_data() {
 /opt/module/sqoop/bin/sqoop import \
---connect jdbc:mysql://hadoop100:3306/$db_name \
+--connect jdbc:mysql://hadoop102:3306/$db_name \
 --username root \
 --password root \
 --target-dir /origin_data/$db_name/db/$1/$db_date \
