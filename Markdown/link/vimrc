@@ -1,4 +1,3 @@
-colorscheme murphy
 syntax on
 set showmode
 set showcmd
@@ -20,7 +19,6 @@ set smartcase
 set nobackup
 set swapfile
 set dir=~/tmp
-set undofile
 set noerrorbells
 set visualbell
 set history=1000
@@ -30,4 +28,3 @@ set termencoding=utf-8
 set encoding=utf-8
 au FileType c,cpp setlocal comments-=:// comments+=f://
 set paste
-" set number

@@ -2,7 +2,8 @@
 ### Install CentOS
 **关闭防火墙、配置host、免密连接、同步脚本**
 ```bash
-yum install -y vim tar rsync openssh openssh-clients libaio nc net-tools ntp ntpdate ntp-doc
+yum update -y
+yum install -y vim tar rsync openssh openssh-clients libaio nc net-tools ntp ntpdate ntp-doc unzip
 # 新建用户授权
 passwd root
 useradd tian
@@ -293,9 +294,9 @@ hadoop104
 ### MySQL
 ```bash
 rpm -qa|grep mysql #查看当前mysql的安装情况
-sudo rpm -e --nodeps mysql-libs-5.1.73-7.el6.x86_64 #卸载之前的mysql
-sudo rpm -ivh MySQL-client-5.5.54-1.linux2.6.x86_64.rpm #在包所在的目录中安装
-sudo rpm -ivh MySQL-server-5.5.54-1.linux2.6.x86_64.rpm
+sudo rpm -e --nodeps mysql-libs-5.1.73-8.el6_8.x86_64 #卸载之前的mysql
+sudo rpm -ivh MySQL-client-5.6.24-1.el6.x86_64.rpm #在包所在的目录中安装
+sudo rpm -ivh MySQL-server-5.6.24-1.el6.x86_64.rpm
 mysqladmin --version #查看mysql版本
 rpm -qa|grep MySQL #查看mysql是否安装完成
 sudo service mysql restart # 重启服务
@@ -314,7 +315,7 @@ select User, Host, Password from user;
 # 修改user表，把Host表内容修改为%
 update user set host='%' where host='localhost';
 # 删除root中的其他账户
-delete from user where Host='hadoop102';
+delete from user where Host='hadoop101';
 delete from user where Host='127.0.0.1';
 delete from user where Host='::1';
 # 刷新
