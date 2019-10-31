@@ -771,7 +771,7 @@ bin/azkaban-web-shutdown.sh
 
 ### Presto
 
-#### Presto Server
+**Presto Server**
 ```bash
 tar -zxvf presto-server-0.196.tar.gz -C /opt/module/
 mv presto-server-0.196/ presto
@@ -847,7 +847,7 @@ xcall /opt/module/presto/launcher start
 # 日志查看路径/opt/module/presto/data/var/log
 ```
 
-#### Presto Client
+**Presto Client**
 ```bash
 # 上传presto-cli-0.196-executable.jar至/opt/module/presto
 # 修改文件名并增加执行权限
@@ -858,7 +858,7 @@ chmod +x prestocli
 ```
  * Presto命令行操作相当于hive命令行操作，每个表必须加上schema，如`select * from schema.table limit 100`
 
-#### Presto 可视化Client
+**Presto 可视化Client**
 ```bash
 # 上传yanagishima-18.0.zip至module并解压
 unzip yanagishima-18.0.zip
