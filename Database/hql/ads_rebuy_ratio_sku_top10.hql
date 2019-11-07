@@ -27,7 +27,7 @@ from(
             sku_id,
             cast(sum(if(mn.order_count>2,1,0))/sum(if(mn.order_count>1,1,0))as decimal(10,2)) rebuy_ratio
         from dws_sal_detail_daycount
-        where dt='2019-08-28'
+        where dt='2019-11-07'
         group by user_level,sku_id) t1
         )t2
 where rank_num<=10;

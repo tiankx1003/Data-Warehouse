@@ -32,7 +32,7 @@ TBLPROPERTIES('parquet.compression'='lzo');
 
 -- 向表中导入数据
 insert overwrite table dwd_start_log
-PARTITION (dt='2019-08-24')
+PARTITION (dt='2019-11-07')
 select 
     get_json_object(line,'$.mid') mid_id,
     get_json_object(line,'$.uid') user_id,
@@ -58,7 +58,7 @@ select
     get_json_object(line,'$.detail') detail,
     get_json_object(line,'$.extend1') extend1
 from ods_start_log 
-where dt='2019-08-24';
+where dt='2019-11-07';
 
 -- 验证
 select * from dwd_start_log limit 2;

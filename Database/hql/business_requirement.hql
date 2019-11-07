@@ -13,7 +13,7 @@ location 'warehouse/gmall/ads/ads_gmv_sum/day';
   -- 插入数据
 insert into table ads_gmv_sum_day
 select 
-    '2019-08-28' dt,
+    '2019-11-07' dt,
     sum(order_count) gmv_count,
     sum(order_mount) gmv_mount,
     sum(payment_mount) gmv_payment
@@ -35,7 +35,7 @@ location '/warehouse/gmall/ads/ads_user_convert_day';
   -- 插入数据
 insert into table ads_user_convert_day
 select 
-    '2019-08-28' dt,
+    '2019-11-07' dt,
     sum(t1.dc) uv_m_count,
     sum(t1.nmc) new_m_count,
     cast(sum(t1.dc)/sum(t1.nmc)*100 as decimal(10,2)) new_m_ratio
@@ -43,11 +43,11 @@ from
     (
         select day_count dc,0 nmc
         from ads_uv_count
-        where dt='2019-08-28'
+        where dt='2019-11-07'
         union all
         select 0 dc,new_mid_count nmc
         from ads_new_mid count
-        where create_date='2019-08-28'
+        where create_date='2019-11-07'
     ) t1;
     
 
@@ -81,7 +81,7 @@ from
 			sum(if(order_count)>0,1,0) s_oc,
 			sum(if(payment_count)>0,1,0) s_pc,
 		from ads_user_action
-		where dt='2019-08-28',
+		where dt='2019-11-07',
 		group by dt
 	) t1
 	join ads_uv_count uc
@@ -127,7 +127,7 @@ as(
 		count(*) order_count,
 		sum(od.order_price*sku_num) order_amount
 	from dwd_order_detail od
-	where od.dt='2019-08-28'
+	where od.dt='2019-11-07'
 	group by user_id, sku_id
 )
 select
@@ -135,7 +135,7 @@ select
     td.sku_id,
     ui.gender,
     -- ui.age,
-    ceil(month_between('2019-08-28',ui.birthday)/12),
+    ceil(month_between('2019-11-07',ui.birthday)/12),
     ui.level,
     si.price,
     si.name,
@@ -153,9 +153,9 @@ select
 from
     tmp_detail td
     left join dwd_user_info ui
-    on td.user_id=ui.id and dt='2019-08-28'
+    on td.user_id=ui.id and dt='2019-11-07'
     left join dwd_sku_info si
-    on td.sku_id=si.id and dt='2019-08-28';
+    on td.sku_id=si.id and dt='2019-11-07';
 
   -- ADS - 品牌复购率
   -- 建表
@@ -186,8 +186,8 @@ select
 	cast(sum(if(mn.order_count>2,1,0))/sum(if(mn.order_count>1,1,0))as decimal(10,2)) buy_twice_last_ratio,
 	sum(if(mn.order_count>3,1,0)) buy_3times_last,
 	cast(sum(if(mn.order_count>3,1,0))/sum(if(mn.order_count>1,1,0))as decimal(10,2)) buy_3times_last_ratio,
-	date_format('2019-08-28','yyyy-MM') stat_mn,
-	'2019-08-28' stat_date
+	date_format('2019-11-07','yyyy-MM') stat_mn,
+	'2019-11-07' stat_date
 from
 	(
 		select
@@ -197,7 +197,7 @@ from
 			sd.sku_category1_name
 			sum(order_count) order_count
 		from dws_sale_detail_daycount sd
-		where date_format(dt,'yyyy-MM')=date_format('2019-08-28','yyyy-MM')
+		where date_format(dt,'yyyy-MM')=date_format('2019-11-07','yyyy-MM')
 		group by user_id, sd.sku_tm_id, sd.sku_category1_id, sd.sku_category1_name
 	) mn
 group by mn.sku_tm_id, mn.sku_category1_id, mn.sku_category1_name;
@@ -232,7 +232,7 @@ from(
             sku_id,
             cast(sum(if(mn.order_count>2,1,0))/sum(if(mn.order_count>1,1,0))as decimal(10,2)) rebuy_ratio
         from dws_sal_detail_daycount
-        where dt='2019-08-28'
+        where dt='2019-11-07'
         group by user_level,sku_id) t1
         )t2
 where rank_num<=10;

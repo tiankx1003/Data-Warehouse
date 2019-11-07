@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 for i in hadoop102 hadoop103 
 do

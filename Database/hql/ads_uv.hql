@@ -8,7 +8,7 @@ set hive.exec.dynamic.partition.mode=nonstrict;
 drop table if exists dws_uv_day;
 create table dws_uv_day(mid_id string, os string) 
 partitioned by(dt string)
-stored as parquet -- parquet用于确定压缩格式?
+stored as parquet 
 location '/warehouse/gmall/dws/dws_uv_day';
 
 drop table if exists dws_uv_wk;
@@ -24,19 +24,19 @@ location '/warehouse/gmall/dws/dws_uv_wk';
 insert overwrite table dws_uv_day partition(dt)
 select mid_id,
     concat_ws('|',collect_set(os))  os, -- 根据mid_id分组后使用collect_set函数把每组的os聚合成数组，在使用concat拼接
-    '2019-08-28' dt
+    '2019-11-07' dt
 from dwd_start_log 
-where dt='2019-08-28' 
+where dt='2019-11-07' 
 group by mid_id; -- 按照mid_id分组
 
 insert overwrite table dws_uv_wk partition(wk_dt)
 select mid_id,
 	concat_ws('|',collect_set(os)) os,
-	date_add(next_day('2019-08-28','MO'),-7) monday,
-	date_add(next_day('2019-08-28','MO'),-1) sunday,
-	concat(date_add(next_day('2019-08-28','MO'),-7),'_',date_add(next_day('2019-08-28','MO'),-1))
+	date_add(next_day('2019-11-07','MO'),-7) monday,
+	date_add(next_day('2019-11-07','MO'),-1) sunday,
+	concat(date_add(next_day('2019-11-07','MO'),-7),'_',date_add(next_day('2019-11-07','MO'),-1))
 from dwd_start_log
-where dt>=date_add(next_day('2019-08-28','MO'),-7) and dt<=date_add(next_day('2019-08-28','MO'),-1)
+where dt>=date_add(next_day('2019-11-07','MO'),-7) and dt<=date_add(next_day('2019-11-07','MO'),-1)
 group by mid_id;
 
 select * from dws_uv_day limit 10;
@@ -57,17 +57,17 @@ location '/warehouse/gmall/dws/ads_uv_count';
 
   -- 插入数据
 insert overwrite table ads_uv_count
-select '2019-08-28' dt,
+select '2019-11-07' dt,
 	daycount.ct,wkcount.ct,
-	if(date_add(next_day('2019-08-28','MO'),-1)='2019-08-28','Y','N') -- 是否是周末
+	if(date_add(next_day('2019-11-07','MO'),-1)='2019-11-07','Y','N') -- 是否是周末
 from
-	(select '2019-08-28' dt, count(*) ct 
+	(select '2019-11-07' dt, count(*) ct 
 	from dws_uv_day
-	where dt='2019-08-28') daycount
+	where dt='2019-11-07') daycount
 	join 
-	(select '2019-08-28' dt, count(*) ct
+	(select '2019-11-07' dt, count(*) ct
 	from dws_uv_wk
-	where wk_dt=concat(date_add(next_day('2019-08-28','MO'),-7),'_',date_add(next_day('2019-08-28','MO'),-1))) wkcount
+	where wk_dt=concat(date_add(next_day('2019-11-07','MO'),-7),'_',date_add(next_day('2019-11-07','MO'),-1))) wkcount
 	on daycount.dt=wkcount.dt;
 
 select * from ads_uv_count;

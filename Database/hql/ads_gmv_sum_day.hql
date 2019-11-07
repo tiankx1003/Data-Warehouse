@@ -13,11 +13,11 @@ location '/warehouse/gmall/ads/ads_gmv_sum_day/'
 -- 导入数据
 insert into table ads_gmv_sum_day
 select 
-'2019-08-28' dt,
+'2019-11-07' dt,
     sum(order_count) gmv_count,
     sum(order_amount) gmv_amount,
     sum(payment_amount) payment_amount 
 from dws_user_action
-where dt ='2019-08-28'
+where dt ='2019-11-07'
 group by dt
 ;
