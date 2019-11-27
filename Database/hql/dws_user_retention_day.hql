@@ -48,8 +48,8 @@ select
     nm.network,
     nm.lng,
     nm.lat,
-nm.create_date,
-1 retention_day 
+    nm.create_date,
+    1 retention_day 
 from dws_uv_detail_day ud join dws_new_mid_day nm   on ud.mid_id =nm.mid_id 
 where ud.dt='2019-02-11' and nm.create_date=date_add('2019-02-11',-1);
 -- 3）查询导入数据（每天计算前1天的新用户访问留存明细）
